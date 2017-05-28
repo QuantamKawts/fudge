@@ -1,0 +1,11 @@
+# Fudge
+git/
+
+# Python
+*.egg-info/
+__pycache__/
+venv/
+*.pyc
+
+# Vim
+*.swp
