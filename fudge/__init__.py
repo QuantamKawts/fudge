@@ -1,5 +1,4 @@
 import argparse
-import errno
 import hashlib
 import os
 import sys
@@ -8,11 +7,8 @@ import zlib
 
 def makedirs(path):
     """Create a path."""
-    try:
+    if not os.path.exists(path):
         os.makedirs(path)
-    except OSError as error:
-        if error.errno != errno.EEXIST:
-            raise error
 
 
 def init(args):
@@ -134,7 +130,3 @@ def main():
         commands[args.command](args)
     else:
         print("fudge: {} is not a git command. See 'fudge --help'".format(args.command))
-
-
-if __name__ == '__main__':
-    main()
