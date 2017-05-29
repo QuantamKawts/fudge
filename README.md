@@ -13,6 +13,7 @@ Fudge is an implementation of Git in Python, written for learning purposes.
 ```
 $ virtualenv venv
 $ source venv/bin/activate
+$ pip install -r test-requirements.txt
 $ pip install -e .
 $ fudge init
 Initialized empty Git repository in…
@@ -26,6 +27,11 @@ Show help messages:
 ```
 $ fudge --help
 $ fudge <command> --help
+```
+
+Run tests:
+```
+pytest
 ```
 
 ## Implemented commands
