@@ -1,6 +1,7 @@
 import os
 
 from fudge.utils.parser import Parser
+from fudge.utils.path import get_repository_path
 
 
 class Index(object):
@@ -44,7 +45,8 @@ class ObjectType(object):
 
 def parse_index():
     """Parse an index file."""
-    path = os.path.join(os.getcwd(), 'git', 'index')
+    basedir = get_repository_path()
+    path = os.path.join(basedir, 'index')
     with open(path, 'rb') as f:
         data = f.read()
 

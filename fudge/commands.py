@@ -4,17 +4,12 @@ import sys
 import zlib
 
 from fudge.index import parse_index
-
-
-def makedirs(path):
-    """Create a path."""
-    if not os.path.exists(path):
-        os.makedirs(path)
+from fudge.utils.path import get_repository_path, makedirs
 
 
 def init():
     """Create an empty Git repository or reinitialize an existing one."""
-    basedir = os.path.join(os.getcwd(), 'git/')
+    basedir = get_repository_path()
     subdirs = ['objects']
 
     reinit = os.path.exists(basedir)
@@ -48,9 +43,10 @@ def hash_object(path, stdin, write):
     print(digest)
 
     if write:
+        basedir = get_repository_path()
         dirname, filename = digest[:2], digest[2:]
 
-        dirpath = os.path.join(os.getcwd(), 'git', 'objects', dirname)
+        dirpath = os.path.join(basedir, 'objects', dirname)
         makedirs(dirpath)
 
         filepath = os.path.join(dirpath, filename)
@@ -65,8 +61,9 @@ def cat_file(digest, show_type, show_size, show_contents):
         print('fudge: invalid object name {}'.format(digest))
         return
 
+    basedir = get_repository_path()
     dirname, filename = digest[:2], digest[2:]
-    path = os.path.join(os.getcwd(), 'git', 'objects', dirname, filename)
+    path = os.path.join(basedir, 'objects', dirname, filename)
     if not os.path.exists(path):
         print('fudge: invalid object name {}'.format(digest))
         return

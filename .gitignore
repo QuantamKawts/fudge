@@ -1,5 +1,5 @@
 # Fudge
-git/
+.fudge/
 
 # Python
 *.egg-info/
