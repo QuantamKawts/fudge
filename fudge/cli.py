@@ -5,14 +5,6 @@ from fudge.commands import cat_file, hash_object, init, ls_files, update_index
 
 
 def cli():
-    commands = {
-        'init': init,
-        'hash-object': hash_object,
-        'cat-file': cat_file,
-        'ls-files': ls_files,
-        'update-index': update_index,
-    }
-
     parser = argparse.ArgumentParser()
 
     subparsers = parser.add_subparsers(dest='command')
@@ -64,5 +56,13 @@ def cli():
         parser.print_help()
         sys.exit(1)
 
-    if args.command in commands:
-        commands[args.command](args)
+    if args.command == 'cat-file':
+        cat_file(args.object, args.t, args.s, args.p)
+    elif args.command == 'hash-object':
+        hash_object(args.file, args.stdin, args.w)
+    elif args.command == 'init':
+        init()
+    elif args.command == 'ls-files':
+        ls_files(args.stage)
+    elif args.command == 'update-index':
+        update_index()

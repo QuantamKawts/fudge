@@ -12,7 +12,7 @@ def makedirs(path):
         os.makedirs(path)
 
 
-def init(args):
+def init():
     """Create an empty Git repository or reinitialize an existing one."""
     basedir = os.path.join(os.getcwd(), 'git/')
     subdirs = ['objects']
@@ -29,13 +29,13 @@ def init(args):
         print('Initialized empty Git repository in {}'.format(basedir))
 
 
-def hash_object(args):
+def hash_object(path, stdin, write):
     """Compute an object ID and optionally creates a blob from a file."""
     data = None
-    if args.file:
-        with open(args.file, 'r') as f:
+    if path:
+        with open(path, 'r') as f:
             data = f.read()
-    elif args.stdin:
+    elif stdin:
         data = sys.stdin.read()
 
     if not data:
@@ -47,7 +47,7 @@ def hash_object(args):
     digest = hashlib.sha1(blob).hexdigest()
     print(digest)
 
-    if args.w:
+    if write:
         dirname, filename = digest[:2], digest[2:]
 
         dirpath = os.path.join(os.getcwd(), 'git', 'objects', dirname)
@@ -59,9 +59,8 @@ def hash_object(args):
             f.write(compressed)
 
 
-def cat_file(args):
+def cat_file(digest, show_type, show_size, show_contents):
     """Provide content, type or size information for repository objects."""
-    digest = args.object
     if len(digest) != 40:
         print('fudge: invalid object name {}'.format(digest))
         return
@@ -80,24 +79,24 @@ def cat_file(args):
     header, contents = data.split('\0', 1)
     type, size = header.split()
 
-    if args.t:
+    if show_type:
         print(type)
-    elif args.s:
+    elif show_size:
         print(size)
-    elif args.p:
+    elif show_contents:
         print(contents, end='')
 
 
-def ls_files(args):
+def ls_files(stage=False):
     """Show information about files in the index."""
     index = parse_index()
     for entry in index.entries:
-        if args.stage:
+        if stage:
             print(entry.perms, entry.checksum, entry.path)
         else:
             print(entry.path)
 
 
-def update_index(args):
+def update_index():
     """Register file contents in the working tree to the index."""
     pass
