@@ -33,6 +33,7 @@ $ fudge <command> --help
 
 - `hash-object`
 - `cat-file`
+- `ls-files`
 
 ### Porcelain
 
@@ -41,6 +42,7 @@ $ fudge <command> --help
 ## References
 
 - [Pro Git's "Git Internals" chapter](https://git-scm.com/book/en/v2/Git-Internals-Plumbing-and-Porcelain)
+- [Git's technical documentation](https://github.com/git/git/tree/master/Documentation/technical)
 
 ## License
 
