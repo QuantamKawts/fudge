@@ -1,4 +1,5 @@
 import os
+from collections import namedtuple
 
 from fudge.utils.parser import Parser
 from fudge.utils.path import get_repository_path
@@ -19,22 +20,10 @@ class Index(object):
         return 'Index(entries={!r})'.format(self.entries)
 
 
-class Entry(object):
-    def __init__(self, ctime, mtime, dev, ino, object_type, perms, uid, gid, size, checksum, path):
-        self.ctime = ctime
-        self.mtime = mtime
-        self.dev = dev
-        self.ino = ino
-        self.object_type = object_type
-        self.perms = perms
-        self.uid = uid
-        self.gid = gid
-        self.size = size
-        self.checksum = checksum
-        self.path = path
-
-    def __repr__(self):
-        return 'Entry(path={!r})'.format(self.path)
+Entry = namedtuple('Entry', [
+    'ctime_s', 'ctime_n', 'mtime_s', 'mtime_n', 'dev', 'ino', 'object_type',
+    'perms', 'uid', 'gid', 'size', 'checksum', 'path'
+])
 
 
 class ObjectType(object):
@@ -65,10 +54,10 @@ def parse_index():
     num_index_entries = header_parser.get_u4()
 
     for _ in range(num_index_entries):
-        ctime = parser.get_u4()
-        ctime_nanoseconds = parser.get_u4()
-        mtime = parser.get_u4()
-        mtime_nanoseconds = parser.get_u4()
+        ctime_s = parser.get_u4()
+        ctime_n = parser.get_u4()
+        mtime_s = parser.get_u4()
+        mtime_n = parser.get_u4()
         dev = parser.get_u4()
         ino = parser.get_u4()
 
@@ -101,7 +90,10 @@ def parse_index():
 
         path = parser.get_utf8()
 
-        entry = Entry(ctime, mtime, dev, ino, object_type, perms, uid, gid, size, checksum, path)
+        entry = Entry(
+            ctime_s, ctime_n, mtime_s, mtime_n, dev, ino, object_type, perms,
+            uid, gid, size, checksum, path
+        )
         index.add(entry)
 
     # Skip extensions
