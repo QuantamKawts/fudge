@@ -8,9 +8,9 @@ def makedirs(path):
 
 
 def get_repository_path():
-    path = os.environ.get('FUDGE_DIR')
-    if path:
-        path = os.path.abspath(path)
+    basedir = os.environ.get('FUDGE_DIR')
+    if basedir:
+        basedir = os.path.abspath(basedir)
     else:
-        path = os.path.join(os.getcwd(), '.fudge')
-    return path
+        basedir = os.getcwd()
+    return os.path.join(basedir, '.fudge')
