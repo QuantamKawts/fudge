@@ -1,6 +1,9 @@
+import hashlib
 import os
+
 from collections import namedtuple
 
+from fudge.utils.builder import Builder
 from fudge.utils.parser import Parser
 from fudge.utils.path import get_repository_path
 
@@ -105,3 +108,48 @@ def read_index():
     index.checksum = checksum
 
     return index
+
+
+def write_index(index):
+    """Write an index file."""
+    header_builder = Builder()
+    header_builder.set(b'DIRC')
+    header_builder.set_u4(2)
+    header_builder.set_u4(len(index.entries))
+
+    builder = Builder()
+
+    for entry in index.entries:
+        builder.set_u4(entry.ctime_s)
+        builder.set_u4(entry.ctime_n)
+        builder.set_u4(entry.mtime_s)
+        builder.set_u4(entry.mtime_n)
+        builder.set_u4(entry.dev)
+        builder.set_u4(entry.ino)
+
+        perms = int(entry.perms[3:], 8)
+        mode = (entry.object_type << 12) | perms
+        builder.set_u4(mode)
+
+        builder.set_u4(entry.uid)
+        builder.set_u4(entry.gid)
+        builder.set_u4(entry.size)
+        builder.set_sha1(entry.checksum)
+
+        # TODO: do not ignore the assume valid, extended and stage flags
+        flags = len(entry.path)
+        builder.set_u2(flags)
+
+        builder.set_utf8(entry.path)
+
+    data = header_builder.data + builder.data
+
+    digest = hashlib.sha1(data).hexdigest()
+    builder.set_sha1(digest)
+
+    data = header_builder.data + builder.data
+
+    basedir = get_repository_path()
+    path = os.path.join(basedir, 'index')
+    with open(path, 'wb') as f:
+        f.write(data)
