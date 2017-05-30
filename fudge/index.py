@@ -36,6 +36,9 @@ def parse_index():
     """Parse an index file."""
     basedir = get_repository_path()
     path = os.path.join(basedir, 'index')
+    if not os.path.exists(path):
+        return Index(2)
+
     with open(path, 'rb') as f:
         data = f.read()
 
