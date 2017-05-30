@@ -32,8 +32,8 @@ class ObjectType(object):
     GITLINK = 0b1110
 
 
-def parse_index():
-    """Parse an index file."""
+def read_index():
+    """Read an index file."""
     basedir = get_repository_path()
     path = os.path.join(basedir, 'index')
     if not os.path.exists(path):

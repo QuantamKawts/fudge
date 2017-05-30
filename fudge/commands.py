@@ -3,7 +3,7 @@ import os
 import sys
 import zlib
 
-from fudge.index import parse_index
+from fudge.index import read_index
 from fudge.utils.path import get_repository_path, makedirs
 
 
@@ -86,7 +86,7 @@ def cat_file(digest, show_type, show_size, show_contents):
 
 def ls_files(stage=False):
     """Show information about files in the index."""
-    index = parse_index()
+    index = read_index()
     for entry in index.entries:
         if stage:
             print(entry.perms, entry.checksum, entry.path)
