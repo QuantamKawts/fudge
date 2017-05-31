@@ -107,6 +107,11 @@ def read_index():
     checksum = parser.get_sha1()
     index.checksum = checksum
 
+    data = header_parser.data + parser.data[:parser.offset-20]
+    data_digest = hashlib.sha1(data).hexdigest()
+    if checksum != data_digest:
+        raise Exception('fudge: bad index file checksum')
+
     return index
 
 
