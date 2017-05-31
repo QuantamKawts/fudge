@@ -46,7 +46,7 @@ def cli():
         '--add', action='store_true', help='Add the specified file to the index')
     update_index_subparser.add_argument(
         '--cacheinfo',
-        metavar='<mode>,<object>,<path>',
+        metavar='<mode>,<sha1>,<path>',
         help='Directly insert the specified info into the index'
     )
     update_index_subparser.add_argument('file', nargs='?')
@@ -65,4 +65,4 @@ def cli():
     elif args.command == 'ls-files':
         ls_files(args.stage)
     elif args.command == 'update-index':
-        update_index()
+        update_index(args.file, args.add, args.cacheinfo)

@@ -21,6 +21,10 @@ $ echo 'test content' | fudge hash-object -w --stdin
 d670460b4b4aece5915caf5c68d12f560a9fe3e4
 $ fudge cat-file -p d670460b4b4aece5915caf5c68d12f560a9fe3e4
 test content
+$ fudge update-index --add --cacheinfo \
+    100644,d670460b4b4aece5915caf5c68d12f560a9fe3e4,test.txt
+$ fudge ls-files --stage
+100644 d670460b4b4aece5915caf5c68d12f560a9fe3e4 test.txt
 ```
 
 Show help messages:
@@ -31,7 +35,7 @@ $ fudge <command> --help
 
 Run tests:
 ```
-pytest
+$ pytest
 ```
 
 ## Implemented commands
@@ -39,6 +43,7 @@ pytest
 
 - `hash-object`
 - `cat-file`
+- `update-index`
 - `ls-files`
 
 ### Porcelain
