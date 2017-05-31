@@ -28,6 +28,11 @@ def test_cat_file(capsys, repo):
     out, err = capsys.readouterr()
     assert out == 'test content\n'
 
+    cat_file(digest[:8], show_contents=True)
+
+    out, err = capsys.readouterr()
+    assert out == 'test content\n'
+
 
 def test_ls_files(capsys, repo):
     with open('tests/index', 'rb') as f:

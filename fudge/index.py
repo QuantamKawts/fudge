@@ -1,11 +1,10 @@
-import hashlib
 import os
 
 from collections import namedtuple
 
-from fudge.utils.builder import Builder
-from fudge.utils.parser import Parser
-from fudge.utils.path import get_repository_path
+from fudge.parsing.builder import Builder
+from fudge.parsing.parser import Parser
+from fudge.utils import get_hash, get_repository_path, read_file, write_file
 
 
 class Index(object):
@@ -35,15 +34,18 @@ class ObjectType(object):
     GITLINK = 0b1110
 
 
+def get_index_path():
+    basedir = get_repository_path()
+    return os.path.join(basedir, 'index')
+
+
 def read_index():
     """Read an index file."""
-    basedir = get_repository_path()
-    path = os.path.join(basedir, 'index')
+    path = get_index_path()
     if not os.path.exists(path):
         return Index(2)
 
-    with open(path, 'rb') as f:
-        data = f.read()
+    data = read_file(path)
 
     header_parser = Parser(data[:12])
     parser = Parser(data[12:])
@@ -104,12 +106,12 @@ def read_index():
 
     # Skip extensions
     parser.offset = len(parser.data) - 20
-    checksum = parser.get_sha1()
-    index.checksum = checksum
+    index_digest = parser.get_sha1()
+    index.checksum = index_digest
 
     data = header_parser.data + parser.data[:parser.offset-20]
-    data_digest = hashlib.sha1(data).hexdigest()
-    if checksum != data_digest:
+    data_digest = get_hash(data)
+    if index_digest != data_digest:
         raise Exception('fudge: bad index file checksum')
 
     return index
@@ -149,12 +151,10 @@ def write_index(index):
 
     data = header_builder.data + builder.data
 
-    digest = hashlib.sha1(data).hexdigest()
+    digest = get_hash(data)
     builder.set_sha1(digest)
 
     data = header_builder.data + builder.data
 
-    basedir = get_repository_path()
-    path = os.path.join(basedir, 'index')
-    with open(path, 'wb') as f:
-        f.write(data)
+    path = get_index_path()
+    write_file(path, data)

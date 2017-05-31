@@ -1,10 +1,9 @@
-import hashlib
 import os
 import sys
-import zlib
 
 from fudge.index import Entry, ObjectType, read_index, write_index
-from fudge.utils.path import get_repository_path, makedirs
+from fudge.object import load_object, store_object
+from fudge.utils import get_hash, get_repository_path, makedirs, read_file
 
 
 def init():
@@ -26,62 +25,31 @@ def init():
 
 def hash_object(path=None, stdin=False, write=False):
     """Compute an object ID and optionally creates a blob from a file."""
-    data = None
     if path:
-        with open(path, 'r') as f:
-            data = f.read()
+        data = read_file(path, mode='r')
     elif stdin:
         data = sys.stdin.read()
+    else:
+        sys.exit(0)
 
-    if not data:
-        return
-
-    blob = 'blob {}\0{}'.format(len(data), data)
-    blob = bytes(blob, 'utf-8')
-
-    digest = hashlib.sha1(blob).hexdigest()
+    obj = 'blob {}\0{}'.format(len(data), data)
+    digest = get_hash(obj)
     print(digest)
 
     if write:
-        basedir = get_repository_path()
-        dirname, filename = digest[:2], digest[2:]
-
-        dirpath = os.path.join(basedir, 'objects', dirname)
-        makedirs(dirpath)
-
-        filepath = os.path.join(dirpath, filename)
-        compressed = zlib.compress(blob)
-        with open(filepath, 'wb') as f:
-            f.write(compressed)
+        store_object(obj)
 
 
 def cat_file(digest, show_type=False, show_size=False, show_contents=False):
     """Provide content, type or size information for repository objects."""
-    if len(digest) != 40:
-        print('fudge: invalid object name {}'.format(digest))
-        sys.exit(1)
-
-    basedir = get_repository_path()
-    dirname, filename = digest[:2], digest[2:]
-    path = os.path.join(basedir, 'objects', dirname, filename)
-    if not os.path.exists(path):
-        print('fudge: invalid object name {}'.format(digest))
-        sys.exit(1)
-
-    with open(path, 'rb') as f:
-        data = f.read()
-    data = zlib.decompress(data)
-    data = str(data, 'utf-8')
-
-    header, contents = data.split('\0', 1)
-    type, size = header.split()
+    obj = load_object(digest)
 
     if show_type:
-        print(type)
+        print(obj.type)
     elif show_size:
-        print(size)
+        print(obj.size)
     elif show_contents:
-        print(contents, end='')
+        print(obj.contents, end='')
 
 
 def ls_files(stage=False):
@@ -97,10 +65,8 @@ def ls_files(stage=False):
 def update_index(path=None, add=False, cacheinfo=None):
     """Register file contents in the working tree to the index."""
     if path:
-        with open(path, 'rb') as f:
-            data = f.read()
-        digest = hashlib.sha1(data).hexdigest()
-
+        data = read_file(path)
+        digest = get_hash(data)
         mode = os.stat(path).st_mode
         mode = '{:o}'.format(mode)
     elif cacheinfo:
@@ -114,7 +80,7 @@ def update_index(path=None, add=False, cacheinfo=None):
             print('fudge: invalid object name {}'.format(digest))
             sys.exit(1)
     else:
-        return
+        sys.exit(0)
 
     index = read_index()
     if add:
