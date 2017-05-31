@@ -9,7 +9,7 @@ def test_hash_object_from_file(capsys, repo):
     test = repo.join('test.txt')
     test.write('test content\n')
 
-    hash_object(test.strpath)
+    hash_object(str(test))
 
     out, err = capsys.readouterr()
     assert out.rstrip() == 'd670460b4b4aece5915caf5c68d12f560a9fe3e4'
@@ -19,7 +19,7 @@ def test_cat_file(capsys, repo):
     test = repo.join('test.txt')
     test.write('test content\n')
 
-    hash_object(test.strpath, write=True)
+    hash_object(str(test), write=True)
 
     out, err = capsys.readouterr()
     digest = out.rstrip('\n')
