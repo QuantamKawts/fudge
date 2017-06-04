@@ -1,7 +1,8 @@
 import argparse
 import sys
 
-from fudge.commands import cat_file, hash_object, init, ls_files, update_index, write_tree
+from fudge.commands import (cat_file, hash_object, init, ls_files, symbolic_ref, update_index,
+                            write_tree)
 
 
 def cli():
@@ -40,6 +41,13 @@ def cli():
         help="Show staged contents' mode bits, object ID and object name"
     )
 
+    symbolic_ref_subparser = subparsers.add_parser(
+        'symbolic-ref', help='Read, modify and delete symbolic refs')
+    symbolic_ref_subparser.add_argument('name')
+    symbolic_ref_subparser.add_argument('ref', nargs='?')
+    symbolic_ref_subparser.add_argument(
+        '--short', action='store_true', help='Shorten the ref output')
+
     update_index_subparser = subparsers.add_parser(
         'update-index', help='Register file contents in the working tree to the index')
     update_index_subparser.add_argument(
@@ -66,6 +74,8 @@ def cli():
         init()
     elif args.command == 'ls-files':
         ls_files(args.stage)
+    elif args.command == 'symbolic-ref':
+        symbolic_ref(args.name, args.ref, args.short)
     elif args.command == 'update-index':
         update_index(args.file, args.add, args.cacheinfo)
     elif args.command == 'write-tree':

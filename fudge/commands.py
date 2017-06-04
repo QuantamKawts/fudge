@@ -4,19 +4,23 @@ import sys
 
 from fudge.index import Entry, ObjectType, read_index, write_index
 from fudge.object import load_object, store_object
-from fudge.utils import get_hash, get_repository_path, makedirs, read_file
+from fudge.utils import get_hash, get_repository_path, makedirs, read_file, write_file
 
 
 def init():
     """Create an empty Git repository or reinitialize an existing one."""
     basedir = get_repository_path()
-    subdirs = ['objects']
+    subdirs = ['objects', 'refs/heads']
 
     reinit = os.path.exists(basedir)
 
     for subdir in subdirs:
         path = os.path.join(basedir, subdir)
         makedirs(path)
+
+    path = os.path.join(basedir, 'HEAD')
+    if not os.path.exists(path):
+        write_file(path, 'ref: refs/heads/master\n', mode='w')
 
     if reinit:
         print('Reinitialized existing Git repository in {}'.format(basedir))
@@ -109,3 +113,44 @@ def write_tree():
     print(digest)
 
     store_object(obj)
+
+
+def symbolic_ref(name, ref=None, short=False):
+    """Read, modify and delete symbolic refs."""
+    basedir = get_repository_path()
+
+    # Prevent directory traversal
+    path = os.path.abspath(os.path.join(basedir, name))
+    if not path.startswith(basedir):
+        print('fudge: invalid name')
+        sys.exit(1)
+
+    if ref:
+        if name == 'HEAD' and not ref.startswith('refs/'):
+            print('fudge: refusing to point HEAD outside of refs/')
+            sys.exit(1)
+
+        write_file(path, 'ref: {}\n'.format(ref), mode='w')
+    else:
+        if not os.path.exists(path):
+            print('fudge: ref file does not exist')
+            sys.exit(1)
+
+        data = read_file(path, mode='r').rstrip('\n')
+
+        lines = data.split('\n')
+        if len(lines) > 1:
+            print('fudge: invalid ref file')
+            sys.exit(1)
+
+        parts = data.split(' ')
+        if len(parts) != 2 and parts[0] != 'ref:':
+            print('fudge: invalid ref file')
+            sys.exit(1)
+
+        ref = parts[1]
+        if short:
+            short_ref = ref.split('/')[-1]
+            print(short_ref)
+        else:
+            print(ref)
