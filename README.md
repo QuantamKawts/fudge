@@ -1,6 +1,20 @@
 # fudge
 
-Fudge is an implementation of Git in Python, written for learning purposes.
+Fudge is an implementation of Git's basics in Python.
+
+My end goal is to learn Git's internals, not to develop a fully-fledged
+implementation of Git. Here are the planned features:
+- Store and load objects to and from the object store (`.fudge/objects/`).
+- Read and write blob, tree and commit objects.
+- Read and write version 2 Git index files, with no extensions.
+- Read and write refs.
+- Read packfiles, and write packfiles without computing deltas.
+- Talk to Git servers using the "smart" protocol.
+
+Support for branches, merge operations, tags… is not currently planned.
+
+In short fudge could be used to create and visualize a simple history, push it
+to a remote Git server, and partially clone repositories.
 
 ## Requirements
 
@@ -19,12 +33,14 @@ $ fudge init
 Initialized empty Git repository in…
 $ echo 'test content' | fudge hash-object -w --stdin
 d670460b4b4aece5915caf5c68d12f560a9fe3e4
-$ fudge cat-file -p d670460b4b4aece5915caf5c68d12f560a9fe3e4
+$ fudge cat-file -p d67046
 test content
 $ fudge update-index --add --cacheinfo \
     100644,d670460b4b4aece5915caf5c68d12f560a9fe3e4,test.txt
 $ fudge ls-files --stage
 100644 d670460b4b4aece5915caf5c68d12f560a9fe3e4 test.txt
+$ fudge write-tree
+80865964295ae2f11d27383e5f9c0b58a8ef21da
 ```
 
 Show help messages:
@@ -41,10 +57,12 @@ $ pytest
 ## Implemented commands
 ### Plumbing
 
-- `hash-object`
 - `cat-file`
-- `update-index`
+- `hash-object`
 - `ls-files`
+- `symbolic-ref`
+- `update-index`
+- `write-tree`
 
 ### Porcelain
 
