@@ -1,3 +1,4 @@
+import binascii
 import os
 import sys
 
@@ -91,3 +92,20 @@ def update_index(path=None, add=False, cacheinfo=None):
         )
         index.add(entry)
         write_index(index)
+
+
+def write_tree():
+    """Create a tree object from the current index."""
+    index = read_index()
+    obj = b''
+    for entry in index.entries:
+        line = '{} {}\0'.format(entry.perms, entry.path)
+        checksum = binascii.unhexlify(entry.checksum)
+        obj += bytes(line, 'utf-8') + checksum
+    header = 'tree {}\0'.format(len(obj))
+    obj = bytes(header, 'utf-8') + obj
+
+    digest = get_hash(obj)
+    print(digest)
+
+    store_object(obj)

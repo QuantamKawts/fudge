@@ -1,7 +1,7 @@
 import argparse
 import sys
 
-from fudge.commands import cat_file, hash_object, init, ls_files, update_index
+from fudge.commands import cat_file, hash_object, init, ls_files, update_index, write_tree
 
 
 def cli():
@@ -51,6 +51,8 @@ def cli():
     )
     update_index_subparser.add_argument('file', nargs='?')
 
+    subparsers.add_parser('write-tree', help='Create a tree object from the current index')
+
     args = parser.parse_args()
     if not args.command:
         parser.print_help()
@@ -66,3 +68,5 @@ def cli():
         ls_files(args.stage)
     elif args.command == 'update-index':
         update_index(args.file, args.add, args.cacheinfo)
+    elif args.command == 'write-tree':
+        write_tree()
