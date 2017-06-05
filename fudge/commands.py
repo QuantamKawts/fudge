@@ -1,9 +1,9 @@
-import binascii
 import os
 import sys
 
 from fudge.index import Entry, ObjectType, read_index, write_index
 from fudge.object import load_object, store_object
+from fudge.tree import build_tree
 from fudge.utils import get_hash, get_repository_path, makedirs, read_file, write_file
 
 
@@ -100,19 +100,12 @@ def cmd_update_index(path=None, add=False, cacheinfo=None):
 
 def cmd_write_tree():
     """Create a tree object from the current index."""
-    index = read_index()
-    obj = b''
-    for entry in index.entries:
-        line = '{} {}\0'.format(entry.perms, entry.path)
-        checksum = binascii.unhexlify(entry.checksum)
-        obj += bytes(line, 'utf-8') + checksum
-    header = 'tree {}\0'.format(len(obj))
-    obj = bytes(header, 'utf-8') + obj
+    tree = build_tree()
 
-    digest = get_hash(obj)
+    digest = get_hash(tree)
     print(digest)
 
-    store_object(obj)
+    store_object(tree)
 
 
 def cmd_symbolic_ref(name, ref=None, short=False):
