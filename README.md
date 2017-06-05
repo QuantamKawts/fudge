@@ -60,6 +60,7 @@ $ pytest
 - `cat-file`
 - `hash-object`
 - `ls-files`
+- `ls-tree`
 - `symbolic-ref`
 - `update-index`
 - `write-tree`

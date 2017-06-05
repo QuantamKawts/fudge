@@ -3,7 +3,7 @@ import sys
 
 from fudge.index import Entry, ObjectType, read_index, write_index
 from fudge.object import load_object, store_object
-from fudge.tree import build_tree
+from fudge.tree import build_tree, parse_tree
 from fudge.utils import get_hash, get_repository_path, makedirs, read_file, write_file
 
 
@@ -54,7 +54,10 @@ def cmd_cat_file(digest, show_type=False, show_size=False, show_contents=False):
     elif show_size:
         print(obj.size)
     elif show_contents:
-        print(obj.contents, end='')
+        if obj.type == 'tree':
+            cmd_ls_tree(digest)
+        else:
+            print(obj.contents, end='')
 
 
 def cmd_ls_files(stage=False):
@@ -65,6 +68,20 @@ def cmd_ls_files(stage=False):
             print(entry.perms, entry.checksum, entry.path)
         else:
             print(entry.path)
+
+
+def cmd_ls_tree(digest):
+    """List the contents of a tree object."""
+    obj = load_object(digest)
+
+    if obj.type != 'tree':
+        print('fudge: not a tree object')
+        sys.exit(1)
+
+    tree = parse_tree(obj.contents)
+    for entry in tree.entries:
+        obj = load_object(entry.checksum)
+        print(entry.mode, obj.type, entry.checksum, entry.path)
 
 
 def cmd_update_index(path=None, add=False, cacheinfo=None):

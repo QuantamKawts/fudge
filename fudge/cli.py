@@ -1,8 +1,8 @@
 import argparse
 import sys
 
-from fudge.commands import (cmd_cat_file, cmd_hash_object, cmd_init, cmd_ls_files, cmd_symbolic_ref,
-                            cmd_update_index, cmd_write_tree)
+from fudge.commands import (cmd_cat_file, cmd_hash_object, cmd_init, cmd_ls_files, cmd_ls_tree,
+                            cmd_symbolic_ref, cmd_update_index, cmd_write_tree)
 
 
 def cli():
@@ -41,6 +41,10 @@ def cli():
         help="Show staged contents' mode bits, object ID and object name"
     )
 
+    ls_tree_subparser = subparsers.add_parser(
+        'ls-tree', help='List the contents of a tree object')
+    ls_tree_subparser.add_argument('object')
+
     symbolic_ref_subparser = subparsers.add_parser(
         'symbolic-ref', help='Read, modify and delete symbolic refs')
     symbolic_ref_subparser.add_argument('name')
@@ -74,6 +78,8 @@ def cli():
         cmd_init()
     elif args.command == 'ls-files':
         cmd_ls_files(args.stage)
+    elif args.command == 'ls-tree':
+        cmd_ls_tree(args.object)
     elif args.command == 'symbolic-ref':
         cmd_symbolic_ref(args.name, args.ref, args.short)
     elif args.command == 'update-index':

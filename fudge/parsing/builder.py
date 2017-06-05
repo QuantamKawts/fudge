@@ -3,8 +3,10 @@ import struct
 
 
 class Builder(object):
-    def __init__(self):
+    def __init__(self, padding=True):
         """Initialize a Builder."""
+        self.padding = padding
+
         self.buffer = bytearray([0] * 16)
         self.offset = 0
 
@@ -23,7 +25,9 @@ class Builder(object):
         value = bytes(value, encoding)
         value += b'\0'
         self.set(value)
-        self.offset = self.pad(self.offset, 8)
+
+        if self.padding:
+            self.offset = self.pad(self.offset, 8)
 
     def pack(self, fmt, *args):
         value = struct.pack(fmt, *args)

@@ -3,11 +3,16 @@ import struct
 
 
 class Parser(object):
-    def __init__(self, data):
+    def __init__(self, data, padding=True):
         """Initialize a Parser."""
         self.data = data
+        self.padding = padding
 
         self.offset = 0
+
+    @property
+    def eof(self):
+        return self.offset >= len(self.data)
 
     def get(self, n):
         """Read a fixed number of bytes."""
@@ -23,7 +28,9 @@ class Parser(object):
             string += char
             char = self.get(1)
 
-        self.offset = self.pad(self.offset, 8)
+        if self.padding:
+            self.offset = self.pad(self.offset, 8)
+
         return str(string, encoding)
 
     def unpack(self, fmt, size):

@@ -55,8 +55,9 @@ def load_object(digest):
 
     data = read_file(path)
     data = zlib.decompress(data)
-    data = str(data, 'utf-8')
 
-    header, contents = data.split('\0', 1)
+    header, contents = data.split(b'\0', 1)
+    header = str(header, 'utf-8')
     type_, size = header.split()
+
     return Object(type_, size, contents)
