@@ -1,6 +1,6 @@
 import pytest
 
-from fudge.commands import cat_file, hash_object, ls_files, symbolic_ref
+from fudge.commands import cmd_cat_file, cmd_hash_object, cmd_ls_files, cmd_symbolic_ref
 
 
 def test_init(repo):
@@ -11,7 +11,7 @@ def test_hash_object_from_file(capsys, repo):
     test = repo.join('test.txt')
     test.write('test content\n')
 
-    hash_object(str(test))
+    cmd_hash_object(str(test))
 
     out, err = capsys.readouterr()
     assert out.rstrip() == 'd670460b4b4aece5915caf5c68d12f560a9fe3e4'
@@ -21,16 +21,16 @@ def test_cat_file(capsys, repo):
     test = repo.join('test.txt')
     test.write('test content\n')
 
-    hash_object(str(test), write=True)
+    cmd_hash_object(str(test), write=True)
 
     out, err = capsys.readouterr()
     digest = out.rstrip('\n')
-    cat_file(digest, show_contents=True)
+    cmd_cat_file(digest, show_contents=True)
 
     out, err = capsys.readouterr()
     assert out == 'test content\n'
 
-    cat_file(digest[:8], show_contents=True)
+    cmd_cat_file(digest[:8], show_contents=True)
 
     out, err = capsys.readouterr()
     assert out == 'test content\n'
@@ -42,7 +42,7 @@ def test_ls_files(capsys, repo):
     index = repo.join('.fudge').join('index')
     index.write(data, mode='wb')
 
-    ls_files(stage=True)
+    cmd_ls_files(stage=True)
 
     expected = [
         '100644 83c831f0b085c70509b1fbb0a0131a9a32e691ac README.md',
@@ -54,25 +54,25 @@ def test_ls_files(capsys, repo):
 
 
 def test_symbolic_ref(capsys, repo):
-    symbolic_ref('HEAD')
+    cmd_symbolic_ref('HEAD')
     out, _ = capsys.readouterr()
     assert out == 'refs/heads/master\n'
 
-    symbolic_ref('HEAD', short=True)
+    cmd_symbolic_ref('HEAD', short=True)
     out, _ = capsys.readouterr()
     assert out == 'master\n'
 
     with pytest.raises(SystemExit):
-        symbolic_ref('../../etc/passwd')
+        cmd_symbolic_ref('../../etc/passwd')
     out, _ = capsys.readouterr()
     assert 'invalid name' in out
 
     with pytest.raises(SystemExit):
-        symbolic_ref('not_an_existing_file')
+        cmd_symbolic_ref('not_an_existing_file')
     out, _ = capsys.readouterr()
     assert 'ref file does not exist' in out
 
-    symbolic_ref('HEAD', 'refs/heads/test')
-    symbolic_ref('HEAD')
+    cmd_symbolic_ref('HEAD', 'refs/heads/test')
+    cmd_symbolic_ref('HEAD')
     out, _ = capsys.readouterr()
     assert out == 'refs/heads/test\n'

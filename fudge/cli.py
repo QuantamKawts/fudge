@@ -1,8 +1,8 @@
 import argparse
 import sys
 
-from fudge.commands import (cat_file, hash_object, init, ls_files, symbolic_ref, update_index,
-                            write_tree)
+from fudge.commands import (cmd_cat_file, cmd_hash_object, cmd_init, cmd_ls_files, cmd_symbolic_ref,
+                            cmd_update_index, cmd_write_tree)
 
 
 def cli():
@@ -67,16 +67,16 @@ def cli():
         sys.exit(1)
 
     if args.command == 'cat-file':
-        cat_file(args.object, args.t, args.s, args.p)
+        cmd_cat_file(args.object, args.t, args.s, args.p)
     elif args.command == 'hash-object':
-        hash_object(args.file, args.stdin, args.w)
+        cmd_hash_object(args.file, args.stdin, args.w)
     elif args.command == 'init':
-        init()
+        cmd_init()
     elif args.command == 'ls-files':
-        ls_files(args.stage)
+        cmd_ls_files(args.stage)
     elif args.command == 'symbolic-ref':
-        symbolic_ref(args.name, args.ref, args.short)
+        cmd_symbolic_ref(args.name, args.ref, args.short)
     elif args.command == 'update-index':
-        update_index(args.file, args.add, args.cacheinfo)
+        cmd_update_index(args.file, args.add, args.cacheinfo)
     elif args.command == 'write-tree':
-        write_tree()
+        cmd_write_tree()

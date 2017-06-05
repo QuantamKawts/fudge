@@ -7,7 +7,7 @@ from fudge.object import load_object, store_object
 from fudge.utils import get_hash, get_repository_path, makedirs, read_file, write_file
 
 
-def init():
+def cmd_init():
     """Create an empty Git repository or reinitialize an existing one."""
     basedir = get_repository_path()
     subdirs = ['objects', 'refs/heads']
@@ -28,7 +28,7 @@ def init():
         print('Initialized empty Git repository in {}'.format(basedir))
 
 
-def hash_object(path=None, stdin=False, write=False):
+def cmd_hash_object(path=None, stdin=False, write=False):
     """Compute an object ID and optionally creates a blob from a file."""
     if path:
         data = read_file(path, mode='r')
@@ -45,7 +45,7 @@ def hash_object(path=None, stdin=False, write=False):
         store_object(obj)
 
 
-def cat_file(digest, show_type=False, show_size=False, show_contents=False):
+def cmd_cat_file(digest, show_type=False, show_size=False, show_contents=False):
     """Provide content, type or size information for repository objects."""
     obj = load_object(digest)
 
@@ -57,7 +57,7 @@ def cat_file(digest, show_type=False, show_size=False, show_contents=False):
         print(obj.contents, end='')
 
 
-def ls_files(stage=False):
+def cmd_ls_files(stage=False):
     """Show information about files in the index."""
     index = read_index()
     for entry in index.entries:
@@ -67,7 +67,7 @@ def ls_files(stage=False):
             print(entry.path)
 
 
-def update_index(path=None, add=False, cacheinfo=None):
+def cmd_update_index(path=None, add=False, cacheinfo=None):
     """Register file contents in the working tree to the index."""
     if path:
         data = read_file(path)
@@ -98,7 +98,7 @@ def update_index(path=None, add=False, cacheinfo=None):
         write_index(index)
 
 
-def write_tree():
+def cmd_write_tree():
     """Create a tree object from the current index."""
     index = read_index()
     obj = b''
@@ -115,7 +115,7 @@ def write_tree():
     store_object(obj)
 
 
-def symbolic_ref(name, ref=None, short=False):
+def cmd_symbolic_ref(name, ref=None, short=False):
     """Read, modify and delete symbolic refs."""
     basedir = get_repository_path()
 
