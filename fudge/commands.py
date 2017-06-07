@@ -57,7 +57,8 @@ def cmd_cat_file(digest, show_type=False, show_size=False, show_contents=False):
         if obj.type == 'tree':
             cmd_ls_tree(digest)
         else:
-            print(obj.contents, end='')
+            contents = str(obj.contents, 'utf-8')
+            print(contents, end='')
 
 
 def cmd_ls_files(stage=False):
@@ -87,8 +88,12 @@ def cmd_ls_tree(digest):
 def cmd_update_index(path=None, add=False, cacheinfo=None):
     """Register file contents in the working tree to the index."""
     if path:
-        data = read_file(path)
-        digest = get_hash(data)
+        data = read_file(path, mode='r')
+
+        obj = 'blob {}\0{}'.format(len(data), data)
+        store_object(obj)
+
+        digest = get_hash(obj)
         mode = os.stat(path).st_mode
         mode = '{:o}'.format(mode)
     elif cacheinfo:
