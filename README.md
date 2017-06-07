@@ -2,19 +2,19 @@
 
 Fudge is an implementation of Git's basics in Python.
 
-My end goal is to learn Git's internals, not to develop a fully-fledged
-implementation of Git. Here are the planned features:
+My end goal with this project is to learn about Git internals, not to develop a
+fully-fledged implementation of Git. Here are the planned features:
 - Store and load objects to and from the object store (`.fudge/objects/`).
 - Read and write blob, tree and commit objects.
 - Read and write version 2 Git index files, with no extensions.
-- Read and write refs.
-- Read packfiles, and write packfiles without computing deltas.
-- Talk to Git servers using the "smart" protocol.
+- Read and write symbolic refs and refs.
+- Read and write undeltified version 2 pack files.
+- Talk to Git servers via HTTP using the "smart" protocol.
 
 Support for branches, merge operations, tags… is not currently planned.
 
 In short fudge could be used to create and visualize a simple history, push it
-to a remote Git server, and partially clone repositories.
+to a remote Git server, and clone repositories.
 
 ## Requirements
 
