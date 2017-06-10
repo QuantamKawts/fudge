@@ -67,6 +67,7 @@ $ pytest
 
 ### Porcelain
 
+- `clone` (partial)
 - `init`
 
 ## References

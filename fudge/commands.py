@@ -3,6 +3,8 @@ import sys
 
 from fudge.index import Entry, ObjectType, read_index, write_index
 from fudge.object import load_object, store_object
+from fudge.pack import parse_pack
+from fudge.protocol import upload_pack
 from fudge.tree import build_tree, parse_tree
 from fudge.utils import get_hash, get_repository_path, makedirs, read_file, write_file
 
@@ -169,3 +171,15 @@ def cmd_symbolic_ref(name, ref=None, short=False):
             print(short_ref)
         else:
             print(ref)
+
+
+def cmd_clone(repository):
+    print('Discovering refs and downloading a pack file')
+    pack = upload_pack(repository)
+
+    print('Parsing the pack file')
+    objects = parse_pack(pack)
+
+    print('Writing {} objects to disk'.format(len(objects)))
+    for obj in objects:
+        store_object(obj.header + obj.contents)

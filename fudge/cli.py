@@ -1,8 +1,8 @@
 import argparse
 import sys
 
-from fudge.commands import (cmd_cat_file, cmd_hash_object, cmd_init, cmd_ls_files, cmd_ls_tree,
-                            cmd_symbolic_ref, cmd_update_index, cmd_write_tree)
+from fudge.commands import (cmd_cat_file, cmd_clone, cmd_hash_object, cmd_init, cmd_ls_files,
+                            cmd_ls_tree, cmd_symbolic_ref, cmd_update_index, cmd_write_tree)
 
 
 def cli():
@@ -65,6 +65,10 @@ def cli():
 
     subparsers.add_parser('write-tree', help='Create a tree object from the current index')
 
+    clone_subparser = subparsers.add_parser(
+        'clone', help='Clone a repository into a new directory')
+    clone_subparser.add_argument('repository')
+
     args = parser.parse_args()
     if not args.command:
         parser.print_help()
@@ -72,6 +76,8 @@ def cli():
 
     if args.command == 'cat-file':
         cmd_cat_file(args.object, args.t, args.s, args.p)
+    elif args.command == 'clone':
+        cmd_clone(args.repository)
     elif args.command == 'hash-object':
         cmd_hash_object(args.file, args.stdin, args.w)
     elif args.command == 'init':
