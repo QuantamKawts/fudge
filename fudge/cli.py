@@ -46,8 +46,7 @@ def cli():
     ls_tree_subparser.add_argument('object')
 
     symbolic_ref_subparser = subparsers.add_parser(
-        'symbolic-ref', help='Read, modify and delete symbolic refs')
-    symbolic_ref_subparser.add_argument('name')
+        'symbolic-ref', help='Read and modify the HEAD symbolic ref')
     symbolic_ref_subparser.add_argument('ref', nargs='?')
     symbolic_ref_subparser.add_argument(
         '--short', action='store_true', help='Shorten the ref output')
@@ -87,7 +86,7 @@ def cli():
     elif args.command == 'ls-tree':
         cmd_ls_tree(args.object)
     elif args.command == 'symbolic-ref':
-        cmd_symbolic_ref(args.name, args.ref, args.short)
+        cmd_symbolic_ref(args.ref, args.short)
     elif args.command == 'update-index':
         cmd_update_index(args.file, args.add, args.cacheinfo)
     elif args.command == 'write-tree':

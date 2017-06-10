@@ -51,28 +51,3 @@ def test_ls_files(capsys, repo):
 
     out, err = capsys.readouterr()
     assert out.rstrip('\n').split('\n') == expected
-
-
-def test_symbolic_ref(capsys, repo):
-    cmd_symbolic_ref('HEAD')
-    out, _ = capsys.readouterr()
-    assert out == 'refs/heads/master\n'
-
-    cmd_symbolic_ref('HEAD', short=True)
-    out, _ = capsys.readouterr()
-    assert out == 'master\n'
-
-    with pytest.raises(SystemExit):
-        cmd_symbolic_ref('../../etc/passwd')
-    out, _ = capsys.readouterr()
-    assert 'invalid name' in out
-
-    with pytest.raises(SystemExit):
-        cmd_symbolic_ref('not_an_existing_file')
-    out, _ = capsys.readouterr()
-    assert 'ref file does not exist' in out
-
-    cmd_symbolic_ref('HEAD', 'refs/heads/test')
-    cmd_symbolic_ref('HEAD')
-    out, _ = capsys.readouterr()
-    assert out == 'refs/heads/test\n'

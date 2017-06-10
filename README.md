@@ -61,7 +61,7 @@ $ pytest
 - `hash-object`
 - `ls-files`
 - `ls-tree`
-- `symbolic-ref`
+- `symbolic-ref` (only supports the `HEAD` symbolic ref)
 - `update-index`
 - `write-tree`
 

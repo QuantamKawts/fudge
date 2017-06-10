@@ -5,9 +5,10 @@ from fudge.index import Entry, ObjectType, read_index, write_index
 from fudge.object import Object, load_object, store_object
 from fudge.pack import parse_pack
 from fudge.protocol import upload_pack
+from fudge.refs import read_symbolic_ref, write_symbolic_ref
 from fudge.repository import create_repository, get_repository_path
 from fudge.tree import build_tree, parse_tree
-from fudge.utils import read_file, write_file
+from fudge.utils import read_file
 
 
 def cmd_init():
@@ -121,40 +122,12 @@ def cmd_write_tree():
     store_object(obj)
 
 
-def cmd_symbolic_ref(name, ref=None, short=False):
-    """Read, modify and delete symbolic refs."""
-    basedir = get_repository_path()
-
-    # Prevent directory traversal
-    path = os.path.abspath(os.path.join(basedir, name))
-    if not path.startswith(basedir):
-        print('fudge: invalid name')
-        sys.exit(1)
-
+def cmd_symbolic_ref(ref=None, short=False):
+    """Read and modify the HEAD symbolic ref."""
     if ref:
-        if name == 'HEAD' and not ref.startswith('refs/'):
-            print('fudge: refusing to point HEAD outside of refs/')
-            sys.exit(1)
-
-        write_file(path, 'ref: {}\n'.format(ref), mode='w')
+        write_symbolic_ref(ref)
     else:
-        if not os.path.exists(path):
-            print('fudge: ref file does not exist')
-            sys.exit(1)
-
-        data = read_file(path, mode='r').rstrip('\n')
-
-        lines = data.split('\n')
-        if len(lines) > 1:
-            print('fudge: invalid ref file')
-            sys.exit(1)
-
-        parts = data.split(' ')
-        if len(parts) != 2 and parts[0] != 'ref:':
-            print('fudge: invalid ref file')
-            sys.exit(1)
-
-        ref = parts[1]
+        ref = read_symbolic_ref()
         if short:
             short_ref = ref.split('/')[-1]
             print(short_ref)
