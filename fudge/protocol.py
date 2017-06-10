@@ -39,14 +39,14 @@ def discover_refs(repo_url, service):
         digest, ref = ref_line.split()
         refs[ref] = digest
 
-    return head_digest, refs
+    return head_digest, capabilities, refs
 
 
 def upload_pack(repo_url):
     repo_url = repo_url.rstrip('/')
     service = 'git-upload-pack'
 
-    head_digest, refs = discover_refs(repo_url, service)
+    head_digest, _, _ = discover_refs(repo_url, service)
 
     command = 'want {}'.format(head_digest)
     request = pkt_line(command)

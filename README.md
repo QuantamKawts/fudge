@@ -73,6 +73,7 @@ $ pytest
 
 - [Pro Git's "Git Internals" chapter](https://git-scm.com/book/en/v2/Git-Internals-Plumbing-and-Porcelain)
 - [Git's technical documentation](https://github.com/git/git/tree/master/Documentation/technical)
+- [Git Files Data Formats](http://git.rsbx.net/Documents/Git_Data_Formats.txt)
 
 ## License
 

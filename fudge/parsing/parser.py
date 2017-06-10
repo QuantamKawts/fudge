@@ -14,6 +14,12 @@ class Parser(object):
     def eof(self):
         return self.offset >= len(self.data)
 
+    def pad(self, value, to):
+        reminder = value % to
+        if reminder > 0:
+            value += to - reminder
+        return value
+
     def get(self, n):
         """Read a fixed number of bytes."""
         value = self.data[self.offset:self.offset+n]
@@ -23,26 +29,35 @@ class Parser(object):
     def get_string(self, encoding):
         string = b''
 
-        char = self.get(1)
-        while char != b'\0':
-            string += char
+        while True:
             char = self.get(1)
+            if char == b'\0':
+                break
+            string += char
 
         if self.padding:
             self.offset = self.pad(self.offset, 8)
 
         return str(string, encoding)
 
+    def get_leb128(self):
+        """Read a Little Endian Base 128 unsigned integer."""
+        shift = 0
+        number = 0
+
+        while True:
+            byte = self.get_u1()
+            number |= (byte & 0x7f) << (shift * 7)
+            if not byte & 0x80:
+                break
+            shift += 1
+
+        return number
+
     def unpack(self, fmt, size):
         value = self.get(size)
         unpacked = struct.unpack(fmt, value)[0]
         return unpacked
-
-    def pad(self, value, to):
-        reminder = value % to
-        if reminder > 0:
-            value += to - reminder
-        return value
 
     def get_s1(self):
         """Read a 1-byte signed integer."""

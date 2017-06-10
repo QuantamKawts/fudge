@@ -1,12 +1,49 @@
+import enum
 import os
 import zlib
-
-from collections import namedtuple
 
 from fudge.utils import get_hash, get_repository_path, makedirs, read_file, write_file
 
 
-Object = namedtuple('Object', ['type', 'size', 'contents'])
+class Object(object):
+    def __init__(self, type_, size, contents):
+        self.type = type_
+        self.size = size
+
+        if isinstance(contents, str):
+            contents = bytes(contents, 'utf-8')
+        self.contents = contents
+
+    @property
+    def header(self):
+        header = '{} {}\0'.format(self.type, self.size)
+        return bytes(header, 'utf-8')
+
+    @property
+    def id(self):
+        return get_hash(self.header + self.contents)
+
+
+class ObjectType(enum.IntEnum):
+    COMMIT = 1
+    TREE = 2
+    BLOB = 3
+    TAG = 4
+    DELTA_OFFSET = 6
+    DELTA_BASE = 7
+
+    @classmethod
+    def exists(cls, value):
+        return any(value == item.value for item in cls)
+
+    @classmethod
+    def to_name(cls, value):
+        return ObjectType(value).name.lower()
+
+    @classmethod
+    def from_name(cls, value):
+        value = value.upper()
+        return ObjectType[value]
 
 
 def get_object_path(digest, mkdir=False):
