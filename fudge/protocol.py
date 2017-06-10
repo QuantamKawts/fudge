@@ -70,7 +70,7 @@ def upload_pack(repo_url):
     lines = iter(response.content.split(b'\n', 1))
     status = parse_pkt_line(next(lines))
     if status != b'NAK':
-        raise FudgeException('requested pack file not found')
+        raise FudgeException('could not retrieve the requested pack file')
 
     return next(lines)
 

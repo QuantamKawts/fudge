@@ -1,5 +1,6 @@
 import hashlib
 import os
+import string
 
 
 class FudgeException(Exception):
@@ -29,3 +30,8 @@ def get_hash(data):
 
     digest = hashlib.sha1(data).hexdigest()
     return digest
+
+
+def ishex(hexstring):
+    hexdigits = set(string.hexdigits)
+    return all(char in hexdigits for char in hexstring)

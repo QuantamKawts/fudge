@@ -18,7 +18,7 @@ to a remote Git server, and clone repositories.
 
 ## Requirements
 
-- Python (>= 3.3)
+- Python (>= 3.4)
 - pip
 - virtualenv
 
@@ -62,7 +62,8 @@ $ pytest
 - `ls-files`
 - `ls-tree`
 - `symbolic-ref` (only supports the `HEAD` symbolic ref)
-- `update-index`
+- `update-index` (partial)
+- `update-ref`
 - `write-tree`
 
 ### Porcelain

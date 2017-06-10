@@ -5,7 +5,7 @@ from fudge.index import Entry, ObjectType, read_index, write_index
 from fudge.object import Object, load_object, store_object
 from fudge.pack import parse_pack
 from fudge.protocol import upload_pack
-from fudge.refs import read_symbolic_ref, write_symbolic_ref
+from fudge.refs import write_ref, read_symbolic_ref, write_symbolic_ref
 from fudge.repository import create_repository, get_repository_path
 from fudge.tree import build_tree, parse_tree
 from fudge.utils import read_file
@@ -113,6 +113,11 @@ def cmd_update_index(path=None, add=False, cacheinfo=None):
         )
         index.add(entry)
         write_index(index)
+
+
+def cmd_update_ref(ref, object_id):
+    """Update the object name stored in a ref safely."""
+    write_ref(ref, object_id)
 
 
 def cmd_write_tree():

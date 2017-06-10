@@ -2,7 +2,8 @@ import argparse
 import sys
 
 from fudge.commands import (cmd_cat_file, cmd_clone, cmd_hash_object, cmd_init, cmd_ls_files,
-                            cmd_ls_tree, cmd_symbolic_ref, cmd_update_index, cmd_write_tree)
+                            cmd_ls_tree, cmd_symbolic_ref, cmd_update_index, cmd_update_ref,
+                            cmd_write_tree)
 
 
 def cli():
@@ -62,6 +63,11 @@ def cli():
     )
     update_index_subparser.add_argument('file', nargs='?')
 
+    update_ref_subparser = subparsers.add_parser(
+        'update-ref', help='Update the object name stored in a ref safely')
+    update_ref_subparser.add_argument('ref')
+    update_ref_subparser.add_argument('object')
+
     subparsers.add_parser('write-tree', help='Create a tree object from the current index')
 
     clone_subparser = subparsers.add_parser(
@@ -89,5 +95,7 @@ def cli():
         cmd_symbolic_ref(args.ref, args.short)
     elif args.command == 'update-index':
         cmd_update_index(args.file, args.add, args.cacheinfo)
+    elif args.command == 'update-ref':
+        cmd_update_ref(args.ref, args.object)
     elif args.command == 'write-tree':
         cmd_write_tree()
