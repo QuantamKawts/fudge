@@ -5,24 +5,17 @@ from fudge.index import Entry, ObjectType, read_index, write_index
 from fudge.object import Object, load_object, store_object
 from fudge.pack import parse_pack
 from fudge.protocol import upload_pack
+from fudge.repository import create_repository, get_repository_path
 from fudge.tree import build_tree, parse_tree
-from fudge.utils import get_repository_path, makedirs, read_file, write_file
+from fudge.utils import read_file, write_file
 
 
 def cmd_init():
     """Create an empty Git repository or reinitialize an existing one."""
     basedir = get_repository_path()
-    subdirs = ['objects', 'refs/heads']
-
     reinit = os.path.exists(basedir)
 
-    for subdir in subdirs:
-        path = os.path.join(basedir, subdir)
-        makedirs(path)
-
-    path = os.path.join(basedir, 'HEAD')
-    if not os.path.exists(path):
-        write_file(path, 'ref: refs/heads/master\n', mode='w')
+    create_repository()
 
     if reinit:
         print('Reinitialized existing Git repository in {}'.format(basedir))

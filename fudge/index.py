@@ -4,7 +4,8 @@ from collections import namedtuple
 
 from fudge.parsing.builder import Builder
 from fudge.parsing.parser import Parser
-from fudge.utils import FudgeException, get_hash, get_repository_path, read_file, write_file
+from fudge.repository import get_repository_path
+from fudge.utils import FudgeException, get_hash, read_file, write_file
 
 
 class Index(object):

@@ -2,8 +2,8 @@ import enum
 import os
 import zlib
 
-from fudge.utils import (FudgeException, get_hash, get_repository_path, makedirs, read_file,
-                         write_file)
+from fudge.repository import get_repository_path
+from fudge.utils import FudgeException, get_hash, makedirs, read_file, write_file
 
 
 class Object(object):

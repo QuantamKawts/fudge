@@ -29,12 +29,3 @@ def get_hash(data):
 
     digest = hashlib.sha1(data).hexdigest()
     return digest
-
-
-def get_repository_path():
-    basedir = os.environ.get('FUDGE_DIR')
-    if basedir:
-        basedir = os.path.abspath(basedir)
-    else:
-        basedir = os.getcwd()
-    return os.path.join(basedir, '.fudge')
