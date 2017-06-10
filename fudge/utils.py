@@ -2,6 +2,10 @@ import hashlib
 import os
 
 
+class FudgeException(Exception):
+    pass
+
+
 def read_file(path, mode='rb'):
     with open(path, mode) as f:
         data = f.read()

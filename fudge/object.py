@@ -2,7 +2,8 @@ import enum
 import os
 import zlib
 
-from fudge.utils import get_hash, get_repository_path, makedirs, read_file, write_file
+from fudge.utils import (FudgeException, get_hash, get_repository_path, makedirs, read_file,
+                         write_file)
 
 
 class Object(object):
@@ -59,7 +60,7 @@ def get_object_path(digest, mkdir=False):
 
 def find_object_path(digest):
     if len(digest) < 4:
-        raise Exception('fudge: invalid object name {}'.format(digest))
+        raise FudgeException('invalid object name {}'.format(digest))
 
     basedir = get_repository_path()
     dirname, filepart = digest[:2], digest[2:]
@@ -88,7 +89,7 @@ def load_object(digest):
     """Load an object from the object store."""
     path = find_object_path(digest)
     if not path:
-        raise Exception('fudge: invalid object name {}'.format(digest))
+        raise FudgeException('invalid object name {}'.format(digest))
 
     data = read_file(path)
     data = zlib.decompress(data)

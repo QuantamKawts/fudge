@@ -4,7 +4,7 @@ from collections import namedtuple
 
 from fudge.parsing.builder import Builder
 from fudge.parsing.parser import Parser
-from fudge.utils import get_hash, get_repository_path, read_file, write_file
+from fudge.utils import FudgeException, get_hash, get_repository_path, read_file, write_file
 
 
 class Index(object):
@@ -51,11 +51,11 @@ def read_index():
     parser = Parser(data[12:])
 
     if header_parser.get(4) != b'DIRC':
-        raise Exception('fudge: invalid index file')
+        raise FudgeException('invalid index file')
 
     version = header_parser.get_u4()
     if version != 2:
-        raise Exception('fudge: unsupported index file version: {}'.format(version))
+        raise FudgeException('unsupported index file version: {}'.format(version))
 
     index = Index(version)
 
@@ -72,13 +72,13 @@ def read_index():
         mode = parser.get_u4()
         object_type = (mode >> 12) & 0xf
         if object_type not in (ObjectType.REGULAR_FILE, ObjectType.SYMBOLIC_LINK, ObjectType.GITLINK):
-            raise Exception('fudge: invalid object type: 0b{:b}'.format(object_type))
+            raise FudgeException('invalid object type: 0b{:b}'.format(object_type))
 
         perms = mode & 0x1ff
         if object_type == ObjectType.REGULAR_FILE and perms not in (0o755, 0o644):
-            raise Exception('fudge: invalid permissions')
+            raise FudgeException('invalid permissions')
         elif object_type in (ObjectType.SYMBOLIC_LINK, ObjectType.GITLINK) and perms != 0:
-            raise Exception('fudge: invalid permissions')
+            raise FudgeException('invalid permissions')
 
         perms = '100{:o}'.format(perms)
 
@@ -91,7 +91,7 @@ def read_index():
         assume_valid = (flags >> 15) & 0b1
         extended = (flags >> 14) & 0b1
         if extended != 0:
-            raise Exception('fudge: invalid extended flag')
+            raise FudgeException('invalid extended flag')
 
         stage = (flags >> 12) & 0b11
         name_length = flags & 0xfff
@@ -112,7 +112,7 @@ def read_index():
     data = header_parser.data + parser.data[:parser.offset-20]
     data_digest = get_hash(data)
     if index_digest != data_digest:
-        raise Exception('fudge: bad index file checksum')
+        raise FudgeException('bad index file checksum')
 
     return index
 

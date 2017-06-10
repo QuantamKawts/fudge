@@ -1,6 +1,7 @@
 import requests
 
 from fudge import __version__
+from fudge.utils import FudgeException
 
 
 def discover_refs(repo_url, service):
@@ -13,17 +14,17 @@ def discover_refs(repo_url, service):
     }
     response = requests.get(url, headers=headers, params=params)
     if response.status_code not in (200, 304):
-        raise Exception('fudge: repository {} does not exist'.format(repo_url))
+        raise FudgeException('repository {} does not exist'.format(repo_url))
 
     content_type = response.headers.get('Content-Type')
     if content_type != 'application/x-{}-advertisement'.format(service):
-        raise Exception('fudge: invalid response Content-Type: {}'.format(content_type))
+        raise FudgeException('invalid response Content-Type: {}'.format(content_type))
 
     lines = iter(response.text.split('\n'))
 
     service_line = parse_pkt_line(next(lines))
     if service_line != '# service={}'.format(service):
-        raise Exception('fudge: invalid service line')
+        raise FudgeException('invalid service line')
 
     info = parse_pkt_line(next(lines))
     head, capabilities = info.split('\0')
@@ -60,16 +61,16 @@ def upload_pack(repo_url):
     }
     response = requests.post(url, headers=headers, data=request)
     if response.status_code not in (200, 304):
-        raise Exception('fudge: repository {} does not exist'.format(repo_url))
+        raise FudgeException('repository {} does not exist'.format(repo_url))
 
     content_type = response.headers.get('Content-Type')
     if content_type != 'application/x-{}-result'.format(service):
-        raise Exception('fudge: invalid response Content-Type: {}'.format(content_type))
+        raise FudgeException('invalid response Content-Type: {}'.format(content_type))
 
     lines = iter(response.content.split(b'\n', 1))
     status = parse_pkt_line(next(lines))
     if status != b'NAK':
-        raise Exception('fudge: requested pack file not found')
+        raise FudgeException('requested pack file not found')
 
     return next(lines)
 

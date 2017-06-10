@@ -2,6 +2,7 @@ import zlib
 
 from fudge.object import Object, ObjectType
 from fudge.parsing.parser import Parser
+from fudge.utils import FudgeException
 
 
 def parse_pack(data):
@@ -9,11 +10,11 @@ def parse_pack(data):
     objects = {}
 
     if parser.get(4) != b'PACK':
-        raise Exception('fudge: invalid pack file')
+        raise FudgeException('invalid pack file')
 
     version = parser.get_u4()
     if version != 2:
-        raise Exception('fudge: unsupported pack file version: {}'.format(version))
+        raise FudgeException('unsupported pack file version: {}'.format(version))
 
     num_objects = parser.get_u4()
     for _ in range(num_objects):
@@ -36,9 +37,9 @@ def parse_packed_object(parser):
 
     object_type = (byte >> 4) & 0x7
     if not ObjectType.exists(object_type):
-        raise Exception('fudge: invalid packed object type: {}'.format(object_type))
+        raise FudgeException('invalid packed object type: {}'.format(object_type))
     elif object_type == ObjectType.DELTA_OFFSET:
-        raise Exception('fudge: unsupported packed object type: {}'.format(object_type))
+        raise FudgeException('unsupported packed object type: {}'.format(object_type))
 
     size = byte & 0xf
 
@@ -56,7 +57,7 @@ def parse_packed_object(parser):
     decompress = zlib.decompressobj()
     contents = decompress.decompress(parser.data[parser.offset:])
     if len(contents) != size:
-        raise Exception('fudge: invalid object size')
+        raise FudgeException('invalid object length')
 
     # The pack file format does not contain the length of the compressed data,
     # and Python's zlib does not give us a way to directly access the number
@@ -76,7 +77,7 @@ def parse_delta_hunks(data, base_object):
     result_object_length = parser.get_leb128()
 
     if base_object.size != base_object_length:
-        raise Exception('fudge: invalid base object length')
+        raise FudgeException('invalid base object length')
 
     source = base_object.contents
     dest = bytearray()
@@ -113,7 +114,7 @@ def parse_delta_hunks(data, base_object):
             dest += insert_data
 
     if len(dest) != result_object_length:
-        raise Exception('fudge: invalid result object length')
+        raise FudgeException('invalid result object length')
 
     return Object(base_object.type, result_object_length, dest)
 
