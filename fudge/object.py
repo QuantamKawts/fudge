@@ -73,15 +73,11 @@ def find_object_path(digest):
     return None
 
 
-def store_object(data):
+def store_object(obj):
     """Store an object in the object store."""
-    if isinstance(data, str):
-        data = bytes(data, 'utf-8')
+    path = get_object_path(obj.id, mkdir=True)
 
-    digest = get_hash(data)
-    path = get_object_path(digest, mkdir=True)
-
-    compressed = zlib.compress(data)
+    compressed = zlib.compress(obj.header + obj.contents)
     write_file(path, compressed)
 
 

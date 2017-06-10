@@ -1,6 +1,7 @@
 from collections import namedtuple
 
 from fudge.index import read_index
+from fudge.object import Object
 from fudge.parsing.builder import Builder
 from fudge.parsing.parser import Parser
 
@@ -41,8 +42,5 @@ def build_tree():
         builder.set_utf8(info)
         builder.set_sha1(entry.checksum)
 
-    header = 'tree {}'.format(len(builder.data))
-    header_builder = Builder(padding=False)
-    header_builder.set_utf8(header)
-
-    return header_builder.data + builder.data
+    data = builder.data
+    return Object('tree', len(data), data)

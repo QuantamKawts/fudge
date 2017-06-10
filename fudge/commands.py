@@ -2,11 +2,11 @@ import os
 import sys
 
 from fudge.index import Entry, ObjectType, read_index, write_index
-from fudge.object import load_object, store_object
+from fudge.object import Object, load_object, store_object
 from fudge.pack import parse_pack
 from fudge.protocol import upload_pack
 from fudge.tree import build_tree, parse_tree
-from fudge.utils import get_hash, get_repository_path, makedirs, read_file, write_file
+from fudge.utils import get_repository_path, makedirs, read_file, write_file
 
 
 def cmd_init():
@@ -39,9 +39,8 @@ def cmd_hash_object(path=None, stdin=False, write=False):
     else:
         sys.exit(0)
 
-    obj = 'blob {}\0{}'.format(len(data), data)
-    digest = get_hash(obj)
-    print(digest)
+    obj = Object('blob', len(data), data)
+    print(obj.id)
 
     if write:
         store_object(obj)
@@ -90,12 +89,12 @@ def cmd_ls_tree(digest):
 def cmd_update_index(path=None, add=False, cacheinfo=None):
     """Register file contents in the working tree to the index."""
     if path:
-        data = read_file(path, mode='r')
+        data = read_file(path)
 
-        obj = 'blob {}\0{}'.format(len(data), data)
+        obj = Object('blob', len(data), data)
         store_object(obj)
 
-        digest = get_hash(obj)
+        digest = obj.id
         mode = os.stat(path).st_mode
         mode = '{:o}'.format(mode)
     elif cacheinfo:
@@ -124,12 +123,9 @@ def cmd_update_index(path=None, add=False, cacheinfo=None):
 
 def cmd_write_tree():
     """Create a tree object from the current index."""
-    tree = build_tree()
-
-    digest = get_hash(tree)
-    print(digest)
-
-    store_object(tree)
+    obj = build_tree()
+    print(obj.id)
+    store_object(obj)
 
 
 def cmd_symbolic_ref(name, ref=None, short=False):
@@ -182,4 +178,4 @@ def cmd_clone(repository):
 
     print('Writing {} objects to disk'.format(len(objects)))
     for obj in objects:
-        store_object(obj.header + obj.contents)
+        store_object(obj)
