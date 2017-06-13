@@ -28,8 +28,7 @@ def get_hash(data):
     if isinstance(data, str):
         data = bytes(data, 'utf-8')
 
-    digest = hashlib.sha1(data).hexdigest()
-    return digest
+    return hashlib.sha1(data).hexdigest()
 
 
 def ishex(hexstring):

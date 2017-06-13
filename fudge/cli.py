@@ -1,9 +1,9 @@
 import argparse
 import sys
 
-from fudge.commands import (cmd_cat_file, cmd_clone, cmd_hash_object, cmd_init, cmd_ls_files,
-                            cmd_ls_tree, cmd_symbolic_ref, cmd_update_index, cmd_update_ref,
-                            cmd_write_tree)
+from fudge.commands import (cmd_cat_file, cmd_clone, cmd_commit, cmd_commit_tree, cmd_hash_object,
+                            cmd_init, cmd_ls_files, cmd_ls_tree, cmd_symbolic_ref,
+                            cmd_update_index, cmd_update_ref, cmd_write_tree)
 
 
 def cli():
@@ -74,6 +74,19 @@ def cli():
         'clone', help='Clone a repository into a new directory')
     clone_subparser.add_argument('repository')
 
+    commit_subparser = subparsers.add_parser(
+        'commit', help='Record changes to the repository')
+    commit_subparser.add_argument(
+        '-m', metavar='message', nargs='?', help='The commit log message')
+
+    commit_tree_subparser = subparsers.add_parser(
+        'commit-tree', help='Create a new commit object')
+    commit_tree_subparser.add_argument(
+        '-p', metavar='parent', nargs='?', help='The id of a parent commit object')
+    commit_tree_subparser.add_argument(
+        '-m', metavar='message', nargs='?', help='The commit log message')
+    commit_tree_subparser.add_argument('tree')
+
     args = parser.parse_args()
     if not args.command:
         parser.print_help()
@@ -83,6 +96,10 @@ def cli():
         cmd_cat_file(args.object, args.t, args.s, args.p)
     elif args.command == 'clone':
         cmd_clone(args.repository)
+    elif args.command == 'commit':
+        cmd_commit(args.m)
+    elif args.command == 'commit-tree':
+        cmd_commit_tree(args.tree, args.p, args.m)
     elif args.command == 'hash-object':
         cmd_hash_object(args.file, args.stdin, args.w)
     elif args.command == 'init':

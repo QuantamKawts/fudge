@@ -1,6 +1,7 @@
 import os
 import sys
 
+from fudge.commit import build_commit, write_commit
 from fudge.index import Entry, ObjectType, read_index, write_index
 from fudge.object import Object, load_object, store_object
 from fudge.pack import parse_pack
@@ -123,8 +124,8 @@ def cmd_update_ref(ref, object_id):
 def cmd_write_tree():
     """Create a tree object from the current index."""
     obj = build_tree()
-    print(obj.id)
     store_object(obj)
+    print(obj.id)
 
 
 def cmd_symbolic_ref(ref=None, short=False):
@@ -150,3 +151,24 @@ def cmd_clone(repository):
     print('Writing {} objects to disk'.format(len(objects)))
     for obj in objects:
         store_object(obj)
+
+
+def cmd_commit(message=None):
+    if not message:
+        print('fudge: empty commit message')
+        sys.exit(1)
+
+    write_commit(message)
+
+
+def cmd_commit_tree(tree, parent=None, message=None):
+    parents = []
+    if parent:
+        parents = [parent]
+
+    if not message:
+        message = sys.stdin.read()
+
+    commit = build_commit(tree, parents, message)
+    store_object(commit)
+    print(commit.id)

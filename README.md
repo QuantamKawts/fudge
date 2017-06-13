@@ -9,7 +9,7 @@ fully-fledged implementation of Git. Here are the planned features:
 - Read and write version 2 Git index files, with no extensions.
 - Read and write symbolic refs and refs.
 - Read and write undeltified version 2 pack files.
-- Talk to Git servers via HTTP using the "smart" protocol.
+- Talk to Git servers via HTTP(S) using the "smart" protocol.
 
 Support for branches, merge operations, tags… is not currently planned.
 
@@ -24,11 +24,27 @@ to a remote Git server, and clone repositories.
 
 ## Usage
 
+Set up a development environment:
 ```
 $ virtualenv venv
 $ source venv/bin/activate
 $ pip install -r test-requirements.txt
 $ pip install -e .
+```
+
+Run tests:
+```
+$ pytest
+```
+
+Show help messages:
+```
+$ fudge --help
+$ fudge <command> --help
+```
+
+Create a commit using only plumbing commands:
+```
 $ fudge init
 Initialized empty Git repository in…
 $ echo 'test content' | fudge hash-object -w --stdin
@@ -41,23 +57,16 @@ $ fudge ls-files --stage
 100644 d670460b4b4aece5915caf5c68d12f560a9fe3e4 test.txt
 $ fudge write-tree
 80865964295ae2f11d27383e5f9c0b58a8ef21da
-```
-
-Show help messages:
-```
-$ fudge --help
-$ fudge <command> --help
-```
-
-Run tests:
-```
-$ pytest
+$ fudge commit-tree -m 'Initial commit' 808659
+<commit id>
+$ fudge update-ref HEAD <commit id>
 ```
 
 ## Implemented commands
 ### Plumbing
 
 - `cat-file`
+- `commit-tree`
 - `hash-object`
 - `ls-files`
 - `ls-tree`
@@ -69,6 +78,7 @@ $ pytest
 ### Porcelain
 
 - `clone` (partial)
+- `commit`
 - `init`
 
 ## References
