@@ -104,11 +104,7 @@ def cmd_ls_tree(digest):
     """List the contents of a tree object."""
     obj = load_object(digest)
 
-    if obj.type != 'tree':
-        print('fudge: not a tree object')
-        sys.exit(1)
-
-    tree = parse_tree(obj.contents)
+    tree = parse_tree(obj)
     for entry in tree.entries:
         obj = load_object(entry.checksum)
         print(entry.mode, obj.type, entry.checksum, entry.path)

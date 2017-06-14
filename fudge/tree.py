@@ -4,6 +4,7 @@ from fudge.index import read_index
 from fudge.object import Object
 from fudge.parsing.builder import Builder
 from fudge.parsing.parser import Parser
+from fudge.utils import FudgeException
 
 
 class Tree(object):
@@ -17,11 +18,13 @@ class Tree(object):
 TreeEntry = namedtuple('TreeEntry', ['mode', 'path', 'checksum'])
 
 
-def parse_tree(tree):
-    parser = Parser(tree, padding=False)
+def parse_tree(obj):
+    if obj.type != 'tree':
+        raise FudgeException('the specified object is not a tree')
 
     tree = Tree()
 
+    parser = Parser(obj.contents, padding=False)
     while not parser.eof:
         info = parser.get_utf8()
         mode, path = info.split()
