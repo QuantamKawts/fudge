@@ -9,10 +9,7 @@ from fudge.utils import FudgeException, get_hash, read_file, write_file
 
 
 class Index(object):
-    def __init__(self, version):
-        self.version = version
-
-        self.checksum = None
+    def __init__(self):
         self.entries = []
 
     def add(self, entry):
@@ -44,7 +41,7 @@ def read_index():
     """Read an index file."""
     path = get_index_path()
     if not os.path.exists(path):
-        return Index(2)
+        return Index()
 
     data = read_file(path)
 
@@ -58,7 +55,7 @@ def read_index():
     if version != 2:
         raise FudgeException('unsupported index file version: {}'.format(version))
 
-    index = Index(version)
+    index = Index()
 
     num_index_entries = header_parser.get_u4()
 
@@ -108,7 +105,6 @@ def read_index():
     # Skip extensions
     parser.offset = len(parser.data) - 20
     index_digest = parser.get_sha1()
-    index.checksum = index_digest
 
     data = header_parser.data + parser.data[:parser.offset-20]
     data_digest = get_hash(data)
