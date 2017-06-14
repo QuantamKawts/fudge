@@ -12,17 +12,53 @@ from fudge.tree import build_tree, parse_tree
 from fudge.utils import read_file
 
 
-def cmd_init():
-    """Create an empty Git repository or reinitialize an existing one."""
-    basedir = get_repository_path()
-    reinit = os.path.exists(basedir)
+def cmd_cat_file(digest, show_type=False, show_size=False, show_contents=False):
+    """Provide content, type or size information for repository objects."""
+    obj = load_object(digest)
 
-    create_repository()
+    if show_type:
+        print(obj.type)
+    elif show_size:
+        print(obj.size)
+    elif show_contents:
+        if obj.type == 'tree':
+            cmd_ls_tree(digest)
+        else:
+            contents = str(obj.contents, 'utf-8')
+            print(contents, end='')
 
-    if reinit:
-        print('Reinitialized existing Git repository in {}'.format(basedir))
-    else:
-        print('Initialized empty Git repository in {}'.format(basedir))
+
+def cmd_clone(repository):
+    print('Discovering refs and downloading a pack file')
+    pack = upload_pack(repository)
+
+    print('Parsing the pack file')
+    objects = parse_pack(pack)
+
+    print('Writing {} objects to disk'.format(len(objects)))
+    for obj in objects:
+        store_object(obj)
+
+
+def cmd_commit(message=None):
+    if not message:
+        print('fudge: empty commit message')
+        sys.exit(1)
+
+    write_commit(message)
+
+
+def cmd_commit_tree(tree, parent=None, message=None):
+    parents = []
+    if parent:
+        parents = [parent]
+
+    if not message:
+        message = sys.stdin.read()
+
+    commit = build_commit(tree, parents, message)
+    store_object(commit)
+    print(commit.id)
 
 
 def cmd_hash_object(path=None, stdin=False, write=False):
@@ -41,20 +77,17 @@ def cmd_hash_object(path=None, stdin=False, write=False):
         store_object(obj)
 
 
-def cmd_cat_file(digest, show_type=False, show_size=False, show_contents=False):
-    """Provide content, type or size information for repository objects."""
-    obj = load_object(digest)
+def cmd_init():
+    """Create an empty Git repository or reinitialize an existing one."""
+    basedir = get_repository_path()
+    reinit = os.path.exists(basedir)
 
-    if show_type:
-        print(obj.type)
-    elif show_size:
-        print(obj.size)
-    elif show_contents:
-        if obj.type == 'tree':
-            cmd_ls_tree(digest)
-        else:
-            contents = str(obj.contents, 'utf-8')
-            print(contents, end='')
+    create_repository()
+
+    if reinit:
+        print('Reinitialized existing Git repository in {}'.format(basedir))
+    else:
+        print('Initialized empty Git repository in {}'.format(basedir))
 
 
 def cmd_ls_files(stage=False):
@@ -79,6 +112,19 @@ def cmd_ls_tree(digest):
     for entry in tree.entries:
         obj = load_object(entry.checksum)
         print(entry.mode, obj.type, entry.checksum, entry.path)
+
+
+def cmd_symbolic_ref(ref=None, short=False):
+    """Read and modify the HEAD symbolic ref."""
+    if ref:
+        write_symbolic_ref(ref)
+    else:
+        ref = read_symbolic_ref()
+        if short:
+            short_ref = ref.split('/')[-1]
+            print(short_ref)
+        else:
+            print(ref)
 
 
 def cmd_update_index(path=None, add=False, cacheinfo=None):
@@ -126,49 +172,3 @@ def cmd_write_tree():
     obj = build_tree()
     store_object(obj)
     print(obj.id)
-
-
-def cmd_symbolic_ref(ref=None, short=False):
-    """Read and modify the HEAD symbolic ref."""
-    if ref:
-        write_symbolic_ref(ref)
-    else:
-        ref = read_symbolic_ref()
-        if short:
-            short_ref = ref.split('/')[-1]
-            print(short_ref)
-        else:
-            print(ref)
-
-
-def cmd_clone(repository):
-    print('Discovering refs and downloading a pack file')
-    pack = upload_pack(repository)
-
-    print('Parsing the pack file')
-    objects = parse_pack(pack)
-
-    print('Writing {} objects to disk'.format(len(objects)))
-    for obj in objects:
-        store_object(obj)
-
-
-def cmd_commit(message=None):
-    if not message:
-        print('fudge: empty commit message')
-        sys.exit(1)
-
-    write_commit(message)
-
-
-def cmd_commit_tree(tree, parent=None, message=None):
-    parents = []
-    if parent:
-        parents = [parent]
-
-    if not message:
-        message = sys.stdin.read()
-
-    commit = build_commit(tree, parents, message)
-    store_object(commit)
-    print(commit.id)

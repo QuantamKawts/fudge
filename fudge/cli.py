@@ -11,8 +11,30 @@ def cli():
 
     subparsers = parser.add_subparsers(dest='command')
 
-    subparsers.add_parser(
-        'init', help='Create an empty Git repository or reinitialize an existing one')
+    cat_file_subparser = subparsers.add_parser(
+        'cat-file', help='Provide content, type or size information for repository objects')
+    cat_file_subparser.add_argument('object')
+    group = cat_file_subparser.add_mutually_exclusive_group(required=True)
+    group.add_argument('-t', action='store_true', help="Show the object's type")
+    group.add_argument('-s', action='store_true', help="Show the object's size")
+    group.add_argument('-p', action='store_true', help="Pretty-print the object's content")
+
+    clone_subparser = subparsers.add_parser(
+        'clone', help='Clone a repository into a new directory')
+    clone_subparser.add_argument('repository')
+
+    commit_subparser = subparsers.add_parser(
+        'commit', help='Record changes to the repository')
+    commit_subparser.add_argument(
+        '-m', metavar='message', nargs='?', help='The commit log message')
+
+    commit_tree_subparser = subparsers.add_parser(
+        'commit-tree', help='Create a new commit object')
+    commit_tree_subparser.add_argument(
+        '-p', metavar='parent', nargs='?', help='The id of a parent commit object')
+    commit_tree_subparser.add_argument(
+        '-m', metavar='message', nargs='?', help='The commit log message')
+    commit_tree_subparser.add_argument('tree')
 
     hash_object_subparser = subparsers.add_parser(
         'hash-object', help='Compute an object ID and optionally creates a blob from a file')
@@ -25,13 +47,8 @@ def cli():
     )
     hash_object_subparser.add_argument('file', nargs='?')
 
-    cat_file_subparser = subparsers.add_parser(
-        'cat-file', help='Provide content, type or size information for repository objects')
-    cat_file_subparser.add_argument('object')
-    group = cat_file_subparser.add_mutually_exclusive_group(required=True)
-    group.add_argument('-t', action='store_true', help="Show the object's type")
-    group.add_argument('-s', action='store_true', help="Show the object's size")
-    group.add_argument('-p', action='store_true', help="Pretty-print the object's content")
+    subparsers.add_parser(
+        'init', help='Create an empty Git repository or reinitialize an existing one')
 
     ls_files_subparser = subparsers.add_parser(
         'ls-files', help='Show information about files in the index')
@@ -69,23 +86,6 @@ def cli():
     update_ref_subparser.add_argument('object')
 
     subparsers.add_parser('write-tree', help='Create a tree object from the current index')
-
-    clone_subparser = subparsers.add_parser(
-        'clone', help='Clone a repository into a new directory')
-    clone_subparser.add_argument('repository')
-
-    commit_subparser = subparsers.add_parser(
-        'commit', help='Record changes to the repository')
-    commit_subparser.add_argument(
-        '-m', metavar='message', nargs='?', help='The commit log message')
-
-    commit_tree_subparser = subparsers.add_parser(
-        'commit-tree', help='Create a new commit object')
-    commit_tree_subparser.add_argument(
-        '-p', metavar='parent', nargs='?', help='The id of a parent commit object')
-    commit_tree_subparser.add_argument(
-        '-m', metavar='message', nargs='?', help='The commit log message')
-    commit_tree_subparser.add_argument('tree')
 
     args = parser.parse_args()
     if not args.command:
