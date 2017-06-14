@@ -1,5 +1,6 @@
 import time
 
+from fudge.config import get_config_value
 from fudge.object import Object, load_object, store_object
 from fudge.tree import build_tree
 from fudge.refs import read_ref, write_ref
@@ -9,21 +10,21 @@ from fudge.utils import FudgeException
 def build_commit(tree, parents, message):
     obj = load_object(tree)
     if obj.type != 'tree':
-        raise FudgeException()
+        raise FudgeException('the specified object is not a tree')
 
     contents = 'tree {}\n'.format(obj.id)
 
     for parent in parents:
         obj = load_object(parent)
         if obj.type != 'commit':
-            raise FudgeException()
+            raise FudgeException('one of the specified parents is not a commit')
 
         contents += 'parent {}\n'.format(obj.id)
 
-    # TODO: read the name and email from `$HOME/.gitconfig`, and check if the
-    # strings are safe
-    name = 'alice'
-    email = 'alice@example.com'
+    name = get_config_value('user', 'name')
+    email = get_config_value('user', 'email')
+    if not name or not email:
+        raise FudgeException('name or email not set')
 
     timestamp = int(time.time())
     offset = time.strftime('%z')

@@ -1,6 +1,6 @@
 import hashlib
 import os
-import string
+from string import hexdigits
 
 
 class FudgeException(Exception):
@@ -31,6 +31,14 @@ def get_hash(data):
     return hashlib.sha1(data).hexdigest()
 
 
-def ishex(hexstring):
-    hexdigits = set(string.hexdigits)
-    return all(char in hexdigits for char in hexstring)
+def ishex(string):
+    digits = set(hexdigits)
+    return all(char in digits for char in string)
+
+
+def issafe(string):
+    blacklist = ['\0', '\n', '<', '>']
+    edge_blacklist = [' ', '.', ',', ':', ';', '"', "'"]
+    return not any(char in blacklist for char in string) \
+        and not any(string.startswith(char) for char in edge_blacklist) \
+        and not any(string.endswith(char) for char in edge_blacklist)
