@@ -80,6 +80,7 @@ $ fudge update-ref HEAD <commit id>
 - `clone` (partial)
 - `commit`
 - `init`
+- `log`
 
 ## References
 
