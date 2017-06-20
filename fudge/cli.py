@@ -2,7 +2,7 @@ import argparse
 import sys
 
 from fudge.commands import (cmd_cat_file, cmd_clone, cmd_commit, cmd_commit_tree, cmd_hash_object,
-                            cmd_init, cmd_ls_files, cmd_ls_tree, cmd_symbolic_ref,
+                            cmd_init, cmd_ls_files, cmd_ls_tree, cmd_log, cmd_symbolic_ref,
                             cmd_update_index, cmd_update_ref, cmd_write_tree)
 
 
@@ -63,6 +63,9 @@ def cli():
         'ls-tree', help='List the contents of a tree object')
     ls_tree_subparser.add_argument('object')
 
+    log_subparser = subparsers.add_parser('log', help='Show commit logs')
+    log_subparser.add_argument('--oneline', action='store_true')
+
     symbolic_ref_subparser = subparsers.add_parser(
         'symbolic-ref', help='Read and modify the HEAD symbolic ref')
     symbolic_ref_subparser.add_argument('ref', nargs='?')
@@ -108,6 +111,8 @@ def cli():
         cmd_ls_files(args.stage)
     elif args.command == 'ls-tree':
         cmd_ls_tree(args.object)
+    elif args.command == 'log':
+        cmd_log(args.oneline)
     elif args.command == 'symbolic-ref':
         cmd_symbolic_ref(args.ref, args.short)
     elif args.command == 'update-index':

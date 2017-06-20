@@ -1,7 +1,7 @@
 import os
 import sys
 
-from fudge.commit import build_commit, write_commit
+from fudge.commit import build_commit, iter_commits, write_commit
 from fudge.index import Entry, ObjectType, read_index, write_index
 from fudge.object import Object, load_object, store_object
 from fudge.pack import parse_pack
@@ -108,6 +108,19 @@ def cmd_ls_tree(digest):
     for entry in tree.entries:
         obj = load_object(entry.checksum)
         print(entry.mode, obj.type, entry.checksum, entry.path)
+
+
+def cmd_log(oneline):
+    for commit in iter_commits():
+        if oneline:
+            short_id = commit.id[:7]
+            short_message = commit.message.split('\n')[0]
+            print('{} {}'.format(short_id, short_message))
+        else:
+            print('commit {}'.format(commit.id))
+            print('Author: {} <{}>'.format(commit.author.name, commit.author.email))
+            print('Date:   {}\n'.format(commit.author.datetime))
+            print('{}\n'.format(commit.message))
 
 
 def cmd_symbolic_ref(ref=None, short=False):
