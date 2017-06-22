@@ -2,10 +2,11 @@ import os
 
 from collections import namedtuple
 
+from fudge.object import Object, get_object_path, store_object
 from fudge.parsing.builder import Builder
 from fudge.parsing.parser import Parser
 from fudge.repository import get_repository_path
-from fudge.utils import FudgeException, get_hash, read_file, write_file
+from fudge.utils import FudgeException, get_hash, read_file, stat, write_file
 
 
 class Index(object):
@@ -155,3 +156,33 @@ def write_index(index):
 
     path = get_index_path()
     write_file(path, data)
+
+
+def add_to_index(entry):
+    index = read_index()
+    index.add(entry)
+    write_index(index)
+
+
+def add_file_to_index(path):
+    data = read_file(path)
+    obj = Object('blob', len(data), data)
+    store_object(obj)
+
+    status = stat(path)
+    status['perms'] = '100{:o}'.format(status['perms'])
+
+    # TODO: handle symbolic links
+    entry = Entry(object_type=ObjectType.REGULAR_FILE, checksum=obj.id, path=path, **status)
+    add_to_index(entry)
+
+
+def add_object_to_index(mode, object_id, path):
+    object_path = get_object_path(object_id)
+    status = stat(object_path)
+    # TODO: check the validity of mode
+    status['perms'] = mode
+
+    # TODO: handle symbolic links
+    entry = Entry(object_type=ObjectType.REGULAR_FILE, checksum=object_id, path=path, **status)
+    add_to_index(entry)

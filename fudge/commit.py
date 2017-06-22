@@ -16,12 +16,13 @@ class Author(object):
     def __init__(self, name, email, timestamp, offset):
         self.name = name
         self.email = email
-        self.timestamp = float(timestamp)
+        self.timestamp = timestamp
         self.offset = offset
 
     @property
     def datetime(self):
-        utc_datetime = datetime.utcfromtimestamp(self.timestamp)
+        timestamp = float(self.timestamp)
+        utc_datetime = datetime.utcfromtimestamp(timestamp)
         return '{} {}'.format(utc_datetime.strftime('%c'), self.offset)
 
 

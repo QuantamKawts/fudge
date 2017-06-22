@@ -2,7 +2,7 @@ import os
 import sys
 
 from fudge.commit import build_commit, iter_commits, write_commit
-from fudge.index import Entry, ObjectType, read_index, write_index
+from fudge.index import add_file_to_index, add_object_to_index, read_index
 from fudge.object import Object, load_object, store_object
 from fudge.pack import parse_pack
 from fudge.protocol import upload_pack
@@ -139,14 +139,8 @@ def cmd_symbolic_ref(ref=None, short=False):
 def cmd_update_index(path=None, add=False, cacheinfo=None):
     """Register file contents in the working tree to the index."""
     if path:
-        data = read_file(path)
-
-        obj = Object('blob', len(data), data)
-        store_object(obj)
-
-        digest = obj.id
-        mode = os.stat(path).st_mode
-        mode = '{:o}'.format(mode)
+        if add:
+            add_file_to_index(path)
     elif cacheinfo:
         info = cacheinfo.split(',')
         if len(info) != 3:
@@ -157,18 +151,9 @@ def cmd_update_index(path=None, add=False, cacheinfo=None):
         if len(digest) != 40:
             print('fudge: invalid object name {}'.format(digest))
             sys.exit(1)
-    else:
-        sys.exit(0)
 
-    index = read_index()
-    if add:
-        entry = Entry(
-            ctime_s=0, ctime_n=0, mtime_s=0, mtime_n=0, dev=0, ino=0,
-            object_type=ObjectType.REGULAR_FILE, perms=mode,
-            uid=0, gid=0, size=0, checksum=digest, path=path
-        )
-        index.add(entry)
-        write_index(index)
+        if add:
+            add_object_to_index(mode, digest, path)
 
 
 def cmd_update_ref(ref, object_id):

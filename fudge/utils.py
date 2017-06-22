@@ -24,6 +24,29 @@ def makedirs(path):
         os.makedirs(path)
 
 
+def stat(path):
+    status = os.stat(path)
+
+    def split(time):
+        return [int(part) for part in str(time).split('.')]
+
+    ctime_s, ctime_n = split(status.st_ctime)
+    mtime_s, mtime_n = split(status.st_mtime)
+
+    return {
+        'ctime_s': ctime_s,
+        'ctime_n': ctime_n,
+        'mtime_s': mtime_s,
+        'mtime_n': mtime_n,
+        'dev': status.st_dev,
+        'ino': status.st_ino,
+        'perms': status.st_mode,
+        'uid': status.st_uid,
+        'gid': status.st_gid,
+        'size': status.st_size,
+    }
+
+
 def get_hash(data):
     if isinstance(data, str):
         data = bytes(data, 'utf-8')
