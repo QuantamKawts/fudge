@@ -1,15 +1,19 @@
 import argparse
 import sys
 
-from fudge.commands import (cmd_cat_file, cmd_clone, cmd_commit, cmd_commit_tree, cmd_hash_object,
-                            cmd_init, cmd_ls_files, cmd_ls_tree, cmd_log, cmd_symbolic_ref,
-                            cmd_update_index, cmd_update_ref, cmd_write_tree)
+from fudge.commands import (cmd_add, cmd_cat_file, cmd_clone, cmd_commit, cmd_commit_tree,
+                            cmd_hash_object, cmd_init, cmd_ls_files, cmd_ls_tree, cmd_log,
+                            cmd_symbolic_ref, cmd_update_index, cmd_update_ref, cmd_write_tree)
 
 
 def cli():
     parser = argparse.ArgumentParser()
 
     subparsers = parser.add_subparsers(dest='command')
+
+    add_subparser = subparsers.add_parser(
+        'add', help='Add file contents to the index')
+    add_subparser.add_argument('path')
 
     cat_file_subparser = subparsers.add_parser(
         'cat-file', help='Provide content, type or size information for repository objects')
@@ -95,7 +99,9 @@ def cli():
         parser.print_help()
         sys.exit(1)
 
-    if args.command == 'cat-file':
+    if args.command == 'add':
+        cmd_add(args.path)
+    elif args.command == 'cat-file':
         cmd_cat_file(args.object, args.t, args.s, args.p)
     elif args.command == 'clone':
         cmd_clone(args.repository)

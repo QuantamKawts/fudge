@@ -12,6 +12,10 @@ from fudge.tree import build_tree, parse_tree
 from fudge.utils import read_file
 
 
+def cmd_add(path=None):
+    cmd_update_index(path=path, add=True)
+
+
 def cmd_cat_file(digest, show_type=False, show_size=False, show_contents=False):
     """Provide content, type or size information for repository objects."""
     obj = load_object(digest)

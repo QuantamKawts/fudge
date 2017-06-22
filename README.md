@@ -77,6 +77,7 @@ $ fudge update-ref HEAD <commit id>
 
 ### Porcelain
 
+- `add`
 - `clone` (partial)
 - `commit`
 - `init`
