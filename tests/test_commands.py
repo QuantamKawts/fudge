@@ -1,6 +1,6 @@
 import pytest
 
-from fudge.commands import cmd_cat_file, cmd_hash_object, cmd_ls_files, cmd_symbolic_ref
+from fudge.commands import cmd_cat_file, cmd_hash_object, cmd_ls_files
 
 
 def test_init(repo):
@@ -36,12 +36,8 @@ def test_cat_file(capsys, repo):
     assert out == 'test content\n'
 
 
+@pytest.mark.fudgefiles(['index_valid', 'index'])
 def test_ls_files(capsys, repo):
-    with open('tests/index', 'rb') as f:
-        data = f.read()
-    index = repo.join('.fudge').join('index')
-    index.write(data, mode='wb')
-
     cmd_ls_files(stage=True)
 
     expected = [
