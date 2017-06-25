@@ -21,7 +21,7 @@ class Index(object):
         return 'Index(entries={!r})'.format(self.entries)
 
 
-Entry = namedtuple('Entry', [
+IndexEntry = namedtuple('IndexEntry', [
     'ctime_s', 'ctime_n', 'mtime_s', 'mtime_n', 'dev', 'ino', 'object_type',
     'perms', 'uid', 'gid', 'size', 'checksum', 'path'
 ])
@@ -97,7 +97,7 @@ def read_index():
 
         path = parser.get_utf8()
 
-        entry = Entry(
+        entry = IndexEntry(
             ctime_s, ctime_n, mtime_s, mtime_n, dev, ino, object_type, perms,
             uid, gid, size, checksum, path
         )
@@ -173,7 +173,7 @@ def add_file_to_index(path):
     status['perms'] = '100{:o}'.format(status['perms'])
 
     # TODO: handle symbolic links
-    entry = Entry(object_type=ObjectType.REGULAR_FILE, checksum=obj.id, path=path, **status)
+    entry = IndexEntry(object_type=ObjectType.REGULAR_FILE, checksum=obj.id, path=path, **status)
     add_to_index(entry)
 
 
@@ -184,5 +184,5 @@ def add_object_to_index(mode, object_id, path):
     status['perms'] = mode
 
     # TODO: handle symbolic links
-    entry = Entry(object_type=ObjectType.REGULAR_FILE, checksum=object_id, path=path, **status)
+    entry = IndexEntry(object_type=ObjectType.REGULAR_FILE, checksum=object_id, path=path, **status)
     add_to_index(entry)
