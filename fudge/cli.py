@@ -82,7 +82,7 @@ def cli():
         '--add', action='store_true', help='Add the specified file to the index')
     update_index_subparser.add_argument(
         '--cacheinfo',
-        metavar='<mode>,<sha1>,<path>',
+        metavar='<mode>,<object>,<path>',
         help='Directly insert the specified info into the index'
     )
     update_index_subparser.add_argument('file', nargs='?')

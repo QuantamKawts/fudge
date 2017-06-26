@@ -149,7 +149,7 @@ def cmd_update_index(path=None, add=False, cacheinfo=None):
     elif cacheinfo:
         info = cacheinfo.split(',')
         if len(info) != 3:
-            print('fudge: `cacheinfo` expects <mode>,<sha1>,<path>')
+            print('fudge: `cacheinfo` expects <mode>,<object>,<path>')
             sys.exit(1)
 
         mode, digest, path = info
