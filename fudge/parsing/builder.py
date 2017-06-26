@@ -77,8 +77,8 @@ class Builder(object):
 
     def set_sha1(self, value):
         """Write a SHA-1 checksum."""
-        digest = binascii.unhexlify(value)
-        self.set(digest)
+        checksum = binascii.unhexlify(value)
+        self.set(checksum)
 
     def set_utf8(self, value):
         """Write a UTF-8 encoded string."""

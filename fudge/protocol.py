@@ -28,7 +28,7 @@ def discover_refs(repo_url, service):
 
     info = parse_pkt_line(next(lines))
     head, capabilities = info.split('\0')
-    head_digest = head.split()[0]
+    head_object_id = head.split()[0]
     capabilities = capabilities.split()
 
     refs = {}
@@ -37,19 +37,19 @@ def discover_refs(repo_url, service):
         if len(ref_line) == 0:
             break
 
-        digest, ref = ref_line.split()
-        refs[ref] = digest
+        object_id, ref = ref_line.split()
+        refs[ref] = object_id
 
-    return head_digest, capabilities, refs
+    return head_object_id, capabilities, refs
 
 
 def upload_pack(repo_url):
     repo_url = repo_url.rstrip('/')
     service = 'git-upload-pack'
 
-    head_digest, _, _ = discover_refs(repo_url, service)
+    head_object_id, _, _ = discover_refs(repo_url, service)
 
-    command = 'want {}'.format(head_digest)
+    command = 'want {}'.format(head_object_id)
     request = pkt_line(command)
     request += pkt_line()
     request += pkt_line('done')

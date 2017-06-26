@@ -26,7 +26,7 @@ def parse_pack(data):
         objects[obj.id] = obj
 
     # TODO: verify checksum
-    digest = parser.get_sha1()
+    checksum = parser.get_sha1()
 
     return objects.values()
 

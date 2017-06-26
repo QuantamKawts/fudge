@@ -105,11 +105,11 @@ def read_index():
 
     # Skip extensions
     parser.offset = len(parser.data) - 20
-    index_digest = parser.get_sha1()
+    index_checksum = parser.get_sha1()
 
     data = header_parser.data + parser.data[:parser.offset-20]
-    data_digest = get_hash(data)
-    if index_digest != data_digest:
+    data_checksum = get_hash(data)
+    if index_checksum != data_checksum:
         raise FudgeException('bad index file checksum')
 
     return index
@@ -149,8 +149,8 @@ def write_index(index):
 
     data = header_builder.data + builder.data
 
-    digest = get_hash(data)
-    builder.set_sha1(digest)
+    checksum = get_hash(data)
+    builder.set_sha1(checksum)
 
     data = header_builder.data + builder.data
 

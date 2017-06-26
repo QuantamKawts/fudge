@@ -47,9 +47,9 @@ class ObjectType(enum.IntEnum):
         return ObjectType[value]
 
 
-def get_object_path(digest, mkdir=False):
+def get_object_path(object_id, mkdir=False):
     basedir = get_repository_path()
-    dirname, filename = digest[:2], digest[2:]
+    dirname, filename = object_id[:2], object_id[2:]
 
     dirpath = os.path.join(basedir, 'objects', dirname)
     if mkdir:
@@ -58,12 +58,12 @@ def get_object_path(digest, mkdir=False):
     return os.path.join(dirpath, filename)
 
 
-def find_object_path(digest):
-    if len(digest) < 4:
-        raise FudgeException('invalid object name {}'.format(digest))
+def find_object_path(object_id):
+    if len(object_id) < 4:
+        raise FudgeException('invalid object name {}'.format(object_id))
 
     basedir = get_repository_path()
-    dirname, filepart = digest[:2], digest[2:]
+    dirname, filepart = object_id[:2], object_id[2:]
 
     dirpath = os.path.join(basedir, 'objects', dirname)
     for filename in os.listdir(dirpath):
@@ -81,11 +81,11 @@ def store_object(obj):
     write_file(path, compressed)
 
 
-def load_object(digest):
+def load_object(object_id):
     """Load an object from the object store."""
-    path = find_object_path(digest)
+    path = find_object_path(object_id)
     if not path:
-        raise FudgeException('invalid object name {}'.format(digest))
+        raise FudgeException('invalid object name {}'.format(object_id))
 
     data = read_file(path)
     data = zlib.decompress(data)

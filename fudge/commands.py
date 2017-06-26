@@ -16,9 +16,9 @@ def cmd_add(path=None):
     cmd_update_index(path=path, add=True)
 
 
-def cmd_cat_file(digest, show_type=False, show_size=False, show_contents=False):
+def cmd_cat_file(object_id, show_type=False, show_size=False, show_contents=False):
     """Provide content, type or size information for repository objects."""
-    obj = load_object(digest)
+    obj = load_object(object_id)
 
     if show_type:
         print(obj.type)
@@ -26,7 +26,7 @@ def cmd_cat_file(digest, show_type=False, show_size=False, show_contents=False):
         print(obj.size)
     elif show_contents:
         if obj.type == 'tree':
-            cmd_ls_tree(digest)
+            cmd_ls_tree(object_id)
         else:
             contents = str(obj.contents, 'utf-8')
             print(contents, end='')
@@ -109,9 +109,9 @@ def cmd_ls_files(stage=False):
             print(entry.path)
 
 
-def cmd_ls_tree(digest):
+def cmd_ls_tree(object_id):
     """List the contents of a tree object."""
-    obj = load_object(digest)
+    obj = load_object(object_id)
 
     tree = parse_tree(obj)
     for entry in tree.entries:
@@ -152,13 +152,13 @@ def cmd_update_index(path=None, add=False, cacheinfo=None):
             print('fudge: `cacheinfo` expects <mode>,<object>,<path>')
             sys.exit(1)
 
-        mode, digest, path = info
-        if len(digest) != 40:
-            print('fudge: invalid object name {}'.format(digest))
+        mode, object_id, path = info
+        if len(object_id) != 40:
+            print('fudge: invalid object name {}'.format(object_id))
             sys.exit(1)
 
         if add:
-            add_object_to_index(mode, digest, path)
+            add_object_to_index(mode, object_id, path)
 
 
 def cmd_update_ref(ref, object_id):
