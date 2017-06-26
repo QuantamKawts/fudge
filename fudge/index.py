@@ -23,7 +23,7 @@ class Index(object):
 
 IndexEntry = namedtuple('IndexEntry', [
     'ctime_s', 'ctime_n', 'mtime_s', 'mtime_n', 'dev', 'ino', 'object_type',
-    'perms', 'uid', 'gid', 'size', 'checksum', 'path'
+    'perms', 'uid', 'gid', 'size', 'object_id', 'path'
 ])
 
 
@@ -84,7 +84,7 @@ def read_index():
         uid = parser.get_u4()
         gid = parser.get_u4()
         size = parser.get_u4()
-        checksum = parser.get_sha1()
+        object_id = parser.get_sha1()
 
         flags = parser.get_u2()
         assume_valid = (flags >> 15) & 0b1
@@ -99,7 +99,7 @@ def read_index():
 
         entry = IndexEntry(
             ctime_s, ctime_n, mtime_s, mtime_n, dev, ino, object_type, perms,
-            uid, gid, size, checksum, path
+            uid, gid, size, object_id, path
         )
         index.add(entry)
 
@@ -139,7 +139,7 @@ def write_index(index):
         builder.set_u4(entry.uid)
         builder.set_u4(entry.gid)
         builder.set_u4(entry.size)
-        builder.set_sha1(entry.checksum)
+        builder.set_sha1(entry.object_id)
 
         # TODO: do not ignore the assume valid, extended and stage flags
         flags = len(entry.path)
@@ -173,7 +173,7 @@ def add_file_to_index(path):
     status['perms'] = '100{:o}'.format(status['perms'])
 
     # TODO: handle symbolic links
-    entry = IndexEntry(object_type=ObjectType.REGULAR_FILE, checksum=obj.id, path=path, **status)
+    entry = IndexEntry(object_type=ObjectType.REGULAR_FILE, object_id=obj.id, path=path, **status)
     add_to_index(entry)
 
 
@@ -184,5 +184,5 @@ def add_object_to_index(mode, object_id, path):
     status['perms'] = mode
 
     # TODO: handle symbolic links
-    entry = IndexEntry(object_type=ObjectType.REGULAR_FILE, checksum=object_id, path=path, **status)
+    entry = IndexEntry(object_type=ObjectType.REGULAR_FILE, object_id=object_id, path=path, **status)
     add_to_index(entry)

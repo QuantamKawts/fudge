@@ -104,7 +104,7 @@ def cmd_ls_files(stage=False):
     index = read_index()
     for entry in index.entries:
         if stage:
-            print(entry.perms, entry.checksum, entry.path)
+            print(entry.perms, entry.object_id, entry.path)
         else:
             print(entry.path)
 
@@ -115,8 +115,8 @@ def cmd_ls_tree(object_id):
 
     tree = parse_tree(obj)
     for entry in tree.entries:
-        obj = load_object(entry.checksum)
-        print(entry.mode, obj.type, entry.checksum, entry.path)
+        obj = load_object(entry.object_id)
+        print(entry.mode, obj.type, entry.object_id, entry.path)
 
 
 def cmd_log(oneline):

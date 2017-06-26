@@ -15,7 +15,7 @@ class Tree(object):
         self.entries.append(entry)
 
 
-TreeEntry = namedtuple('TreeEntry', ['mode', 'path', 'checksum'])
+TreeEntry = namedtuple('TreeEntry', ['mode', 'path', 'object_id'])
 
 
 def parse_tree(obj):
@@ -28,9 +28,9 @@ def parse_tree(obj):
     while not parser.eof:
         info = parser.get_utf8()
         mode, path = info.split()
-        checksum = parser.get_sha1()
+        object_id = parser.get_sha1()
 
-        entry = TreeEntry(mode, path, checksum)
+        entry = TreeEntry(mode, path, object_id)
         tree.add(entry)
 
     return tree
@@ -81,7 +81,7 @@ def build_tree():
                 current.add(node)
             current = current.get(dirname)
 
-        node = Node(filename, entry.perms, entry.checksum)
+        node = Node(filename, entry.perms, entry.object_id)
         current.add(node)
 
     return root
