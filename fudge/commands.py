@@ -8,7 +8,7 @@ from fudge.pack import parse_pack
 from fudge.protocol import upload_pack
 from fudge.refs import write_ref, read_symbolic_ref, write_symbolic_ref
 from fudge.repository import create_repository, get_repository_path
-from fudge.tree import build_tree, parse_tree
+from fudge.tree import parse_tree, write_tree
 from fudge.utils import read_file
 
 
@@ -167,6 +167,5 @@ def cmd_update_ref(ref, object_id):
 
 def cmd_write_tree():
     """Create a tree object from the current index."""
-    obj = build_tree()
-    store_object(obj)
-    print(obj.id)
+    tree_id = write_tree()
+    print(tree_id)

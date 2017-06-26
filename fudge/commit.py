@@ -4,7 +4,7 @@ import time
 
 from fudge.config import get_config_value
 from fudge.object import Object, load_object, store_object
-from fudge.tree import build_tree
+from fudge.tree import write_tree
 from fudge.refs import read_ref, write_ref
 from fudge.utils import FudgeException
 
@@ -59,12 +59,10 @@ def build_commit(tree, parents, message):
 
 
 def write_commit(message):
-    tree = build_tree()
-    store_object(tree)
-
+    tree_id = write_tree()
     parent = read_ref('HEAD')
 
-    commit = build_commit(tree.id, [parent], message)
+    commit = build_commit(tree_id, [parent], message)
     store_object(commit)
 
     write_ref('HEAD', commit.id)
