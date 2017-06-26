@@ -67,6 +67,8 @@ def write_commit(message):
 
     write_ref('HEAD', commit.id)
 
+    return commit.id
+
 
 def parse_commit(obj):
     if obj.type != 'commit':

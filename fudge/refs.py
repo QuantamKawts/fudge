@@ -22,7 +22,7 @@ def valid_ref(ref):
         and not any(char in ref for char in blacklist)
 
 
-def read_symbolic_ref():
+def read_symbolic_ref(short=False):
     path = get_symbolic_ref_path()
     if not os.path.exists(path):
         raise FudgeException('the symbolic ref file does not exist')
@@ -40,6 +40,9 @@ def read_symbolic_ref():
     ref = parts[1]
     if not valid_ref(ref):
         raise FudgeException('invalid ref')
+
+    if short:
+        ref = ref.split('/')[-1]
 
     return ref
 

@@ -49,7 +49,12 @@ def cmd_commit(message=None):
         print('fudge: empty commit message')
         sys.exit(1)
 
-    write_commit(message)
+    commit_id = write_commit(message)
+    ref = read_symbolic_ref(short=True)
+
+    short_id = commit_id[:7]
+    short_message = message.split('\n', 1)[0]
+    print('[{} {}] {}'.format(ref, short_id, short_message))
 
 
 def cmd_commit_tree(tree, parent=None, message=None):
@@ -132,12 +137,8 @@ def cmd_symbolic_ref(ref=None, short=False):
     if ref:
         write_symbolic_ref(ref)
     else:
-        ref = read_symbolic_ref()
-        if short:
-            short_ref = ref.split('/')[-1]
-            print(short_ref)
-        else:
-            print(ref)
+        ref = read_symbolic_ref(short=short)
+        print(ref)
 
 
 def cmd_update_index(path=None, add=False, cacheinfo=None):
