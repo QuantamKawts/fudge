@@ -13,12 +13,16 @@ class Index(object):
     def __init__(self):
         self.entries = []
 
-    def add(self, entry):
-        self.entries.append(entry)
-        self.entries.sort(key=lambda entry: entry.path)
+    def __iter__(self):
+        for entry in self.entries:
+            yield entry
 
     def __repr__(self):
         return 'Index(entries={!r})'.format(self.entries)
+
+    def add(self, entry):
+        self.entries.append(entry)
+        self.entries.sort(key=lambda entry: entry.path)
 
 
 IndexEntry = namedtuple('IndexEntry', [
@@ -124,7 +128,7 @@ def write_index(index):
 
     builder = Builder()
 
-    for entry in index.entries:
+    for entry in index:
         builder.set_u4(entry.ctime_s)
         builder.set_u4(entry.ctime_n)
         builder.set_u4(entry.mtime_s)

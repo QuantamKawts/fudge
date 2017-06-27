@@ -67,7 +67,7 @@ def build_tree():
     root = Node('root', None, None)
 
     index = read_index()
-    for entry in index.entries:
+    for entry in index:
         parts = entry.path.split('/')
         if len(parts) == 1:
             path, filename = [], parts[0]
@@ -87,10 +87,10 @@ def build_tree():
     return root
 
 
-def print_tree(root):
+def print_tree(root, recurse=False):
     for child in root:
-        print(child.mode, child.object_id, child.name)
-        if child.is_branch:
+        print('{:0>5} {} {}'.format(child.mode, child.object_id, child.name))
+        if recurse and child.is_branch:
             print_tree(child)
 
 

@@ -101,7 +101,7 @@ def cmd_init():
 def cmd_ls_files(stage=False):
     """Show information about files in the index."""
     index = read_index()
-    for entry in index.entries:
+    for entry in index:
         if stage:
             print(entry.perms, entry.object_id, entry.path)
         else:
