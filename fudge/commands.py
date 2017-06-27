@@ -8,7 +8,7 @@ from fudge.pack import parse_pack
 from fudge.protocol import upload_pack
 from fudge.refs import write_ref, read_symbolic_ref, write_symbolic_ref
 from fudge.repository import create_repository, get_repository_path
-from fudge.tree import parse_tree, print_tree, write_tree
+from fudge.tree import build_tree_from_object, print_tree, write_tree
 from fudge.utils import read_file
 
 
@@ -111,7 +111,7 @@ def cmd_ls_files(stage=False):
 
 def cmd_ls_tree(object_id, recurse=False):
     """List the contents of a tree object."""
-    tree = parse_tree(object_id)
+    tree = build_tree_from_object(object_id)
     print_tree(tree, recurse)
 
 

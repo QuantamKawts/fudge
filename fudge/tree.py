@@ -51,7 +51,7 @@ def print_tree(root, recurse):
         print('{:0>6} {} {} {}'.format(node.mode, type_, node.object_id, node.name))
 
 
-def parse_tree2(root):
+def build_tree_from_object2(root):
     obj = load_object(root.object_id)
     if obj.type != 'tree':
         raise FudgeException('the specified object is not a tree')
@@ -66,17 +66,17 @@ def parse_tree2(root):
         root.add(node)
 
         if mode == '40000':
-            parse_tree2(node)
+            build_tree_from_object2(node)
 
     return root
 
 
-def parse_tree(object_id):
+def build_tree_from_object(object_id):
     root = Node('root', None, object_id)
-    return parse_tree2(root)
+    return build_tree_from_object2(root)
 
 
-def build_tree():
+def build_tree_from_index():
     root = Node('root', None, None)
 
     index = read_index()
@@ -119,5 +119,5 @@ def write_tree2(root):
 
 
 def write_tree():
-    root = build_tree()
+    root = build_tree_from_index()
     return write_tree2(root)
