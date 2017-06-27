@@ -1,39 +1,10 @@
-from collections import OrderedDict, namedtuple
+from collections import OrderedDict
 
 from fudge.index import read_index
-from fudge.object import Object, store_object
+from fudge.object import Object, load_object, store_object
 from fudge.parsing.builder import Builder
 from fudge.parsing.parser import Parser
 from fudge.utils import FudgeException
-
-
-class Tree(object):
-    def __init__(self):
-        self.entries = []
-
-    def add(self, entry):
-        self.entries.append(entry)
-
-
-TreeEntry = namedtuple('TreeEntry', ['mode', 'path', 'object_id'])
-
-
-def parse_tree(obj):
-    if obj.type != 'tree':
-        raise FudgeException('the specified object is not a tree')
-
-    tree = Tree()
-
-    parser = Parser(obj.contents, padding=False)
-    while not parser.eof:
-        info = parser.get_utf8()
-        mode, path = info.split()
-        object_id = parser.get_sha1()
-
-        entry = TreeEntry(mode, path, object_id)
-        tree.add(entry)
-
-    return tree
 
 
 class Node(object):
@@ -63,6 +34,48 @@ class Node(object):
         return len(self.children) == 0
 
 
+def iter_tree(root, recurse):
+    for child in root:
+        yield child
+
+        if child.is_branch and recurse:
+            yield from iter_tree(child, recurse)
+
+
+def print_tree(root, recurse):
+    for node in iter_tree(root, recurse):
+        if node.is_branch and recurse:
+            continue
+
+        type_ = 'tree' if node.is_branch else 'blob'
+        print('{:0>6} {} {} {}'.format(node.mode, type_, node.object_id, node.name))
+
+
+def parse_tree2(root):
+    obj = load_object(root.object_id)
+    if obj.type != 'tree':
+        raise FudgeException('the specified object is not a tree')
+
+    parser = Parser(obj.contents, padding=False)
+    while not parser.eof:
+        info = parser.get_utf8()
+        mode, name = info.split()
+        object_id = parser.get_sha1()
+
+        node = Node(name, mode, object_id)
+        root.add(node)
+
+        if mode == '40000':
+            parse_tree2(node)
+
+    return root
+
+
+def parse_tree(object_id):
+    root = Node('root', None, object_id)
+    return parse_tree2(root)
+
+
 def build_tree():
     root = Node('root', None, None)
 
@@ -85,13 +98,6 @@ def build_tree():
         current.add(node)
 
     return root
-
-
-def print_tree(root, recurse=False):
-    for child in root:
-        print('{:0>5} {} {}'.format(child.mode, child.object_id, child.name))
-        if recurse and child.is_branch:
-            print_tree(child)
 
 
 def write_tree2(root):

@@ -8,7 +8,7 @@ from fudge.pack import parse_pack
 from fudge.protocol import upload_pack
 from fudge.refs import write_ref, read_symbolic_ref, write_symbolic_ref
 from fudge.repository import create_repository, get_repository_path
-from fudge.tree import parse_tree, write_tree
+from fudge.tree import parse_tree, print_tree, write_tree
 from fudge.utils import read_file
 
 
@@ -39,9 +39,10 @@ def cmd_clone(repository):
     print('Parsing the pack file')
     objects = parse_pack(pack)
 
-    print('Writing {} objects to disk'.format(len(objects)))
-    for obj in objects:
+    for i, obj in enumerate(objects):
+        print('\rWriting objects to disk ({}/{})'.format(i+1, len(objects)), end='')
         store_object(obj)
+    print()
 
 
 def cmd_commit(message=None):
@@ -108,14 +109,10 @@ def cmd_ls_files(stage=False):
             print(entry.path)
 
 
-def cmd_ls_tree(object_id):
+def cmd_ls_tree(object_id, recurse=False):
     """List the contents of a tree object."""
-    obj = load_object(object_id)
-
-    tree = parse_tree(obj)
-    for entry in tree.entries:
-        obj = load_object(entry.object_id)
-        print(entry.mode, obj.type, entry.object_id, entry.path)
+    tree = parse_tree(object_id)
+    print_tree(tree, recurse)
 
 
 def cmd_log(oneline):

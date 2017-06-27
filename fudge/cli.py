@@ -65,6 +65,7 @@ def cli():
 
     ls_tree_subparser = subparsers.add_parser(
         'ls-tree', help='List the contents of a tree object')
+    ls_tree_subparser.add_argument('-r', action='store_true', help='Recurse into sub-trees')
     ls_tree_subparser.add_argument('object')
 
     log_subparser = subparsers.add_parser('log', help='Show commit logs')
@@ -116,7 +117,7 @@ def cli():
     elif args.command == 'ls-files':
         cmd_ls_files(args.stage)
     elif args.command == 'ls-tree':
-        cmd_ls_tree(args.object)
+        cmd_ls_tree(args.object, args.r)
     elif args.command == 'log':
         cmd_log(args.oneline)
     elif args.command == 'symbolic-ref':
