@@ -52,9 +52,8 @@ def cmd_commit(message=None):
     commit_id = write_commit(message)
     ref = read_symbolic_ref(short=True)
 
-    short_id = commit_id[:7]
     short_message = message.split('\n', 1)[0]
-    print('[{} {}] {}'.format(ref, short_id, short_message))
+    print('[{} {:.7}] {}'.format(ref, commit_id, short_message))
 
 
 def cmd_commit_tree(tree, parent=None, message=None):
@@ -122,9 +121,8 @@ def cmd_ls_tree(object_id):
 def cmd_log(oneline):
     for commit in iter_commits():
         if oneline:
-            short_id = commit.id[:7]
             short_message = commit.message.split('\n')[0]
-            print('{} {}'.format(short_id, short_message))
+            print('{:.7} {}'.format(commit.id, short_message))
         else:
             print('commit {}'.format(commit.id))
             print('Author: {} <{}>'.format(commit.author.name, commit.author.email))
