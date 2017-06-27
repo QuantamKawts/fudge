@@ -77,8 +77,9 @@ def store_object(obj):
     """Store an object in the object store."""
     path = get_object_path(obj.id, mkdir=True)
 
-    compressed = zlib.compress(obj.header + obj.contents)
-    write_file(path, compressed)
+    if not os.path.exists(path):
+        compressed = zlib.compress(obj.header + obj.contents)
+        write_file(path, compressed)
 
 
 def load_object(object_id):
