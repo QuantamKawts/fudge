@@ -38,12 +38,15 @@ def test_cat_file(capsys, repo):
 
 @pytest.mark.fudgefiles(['index_valid', 'index'])
 def test_ls_files(capsys, repo):
-    cmd_ls_files(stage=True)
-
     expected = [
-        '100644 83c831f0b085c70509b1fbb0a0131a9a32e691ac README.md',
-        '100644 09907203e86ff6490c525b989c65bdef64aa706a hello.py'
+        '.gitignore',
+        'README.md',
+        'fudge/__init__.py',
+        'tests/data/index',
+        'tests/test_fudge.py',
     ]
+
+    cmd_ls_files()
 
     out, err = capsys.readouterr()
     assert out.rstrip('\n').split('\n') == expected

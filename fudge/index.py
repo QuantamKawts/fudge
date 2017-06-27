@@ -54,7 +54,7 @@ def read_index():
     parser = Parser(data[12:])
 
     if header_parser.get(4) != b'DIRC':
-        raise FudgeException('invalid index file')
+        raise FudgeException('invalid index file magic')
 
     version = header_parser.get_u4()
     if version != 2:
