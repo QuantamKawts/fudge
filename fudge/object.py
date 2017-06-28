@@ -3,7 +3,7 @@ import os
 import zlib
 
 from fudge.repository import get_repository_path
-from fudge.utils import FudgeException, get_hash, makedirs, read_file, write_file
+from fudge.utils import FudgeException, get_hash, ishex, makedirs, read_file, write_file
 
 
 class Object(object):
@@ -66,6 +66,9 @@ def find_object_path(object_id):
     dirname, filepart = object_id[:2], object_id[2:]
 
     dirpath = os.path.join(basedir, 'objects', dirname)
+    if not os.path.exists(dirpath):
+        return None
+
     for filename in os.listdir(dirpath):
         if filename.startswith(filepart):
             return os.path.join(dirpath, filename)
@@ -84,9 +87,13 @@ def store_object(obj):
 
 def load_object(object_id):
     """Load an object from the object store."""
+    object_id = object_id.lower()
+    if not ishex(object_id):
+        raise FudgeException('invalid object name {}'.format(object_id))
+
     path = find_object_path(object_id)
     if not path:
-        raise FudgeException('invalid object name {}'.format(object_id))
+        raise FudgeException('object {} does not exist'.format(object_id))
 
     data = read_file(path)
     data = zlib.decompress(data)
@@ -94,5 +101,6 @@ def load_object(object_id):
     header, contents = data.split(b'\0', 1)
     header = str(header, 'utf-8')
     type_, size = header.split()
+    size = int(size)
 
     return Object(type_, size, contents)
