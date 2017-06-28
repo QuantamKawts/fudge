@@ -70,6 +70,7 @@ $ fudge update-ref HEAD <commit id>
 - `hash-object`
 - `ls-files`
 - `ls-tree`
+- `read-tree`
 - `symbolic-ref` (only supports the `HEAD` symbolic ref)
 - `update-index` (partial)
 - `update-ref`

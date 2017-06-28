@@ -24,6 +24,16 @@ class Index(object):
         self.entries.append(entry)
         self.entries.sort(key=lambda entry: entry.path)
 
+    def add_object(self, mode, object_id, path):
+        object_path = get_object_path(object_id)
+        status = stat(object_path)
+        # TODO: check the validity of mode
+        status['perms'] = mode
+
+        # TODO: handle symbolic links
+        entry = IndexEntry(object_id=object_id, object_type=ObjectType.REGULAR_FILE, path=path, **status)
+        self.add(entry)
+
 
 IndexEntry = namedtuple('IndexEntry', [
     'ctime_s', 'ctime_n', 'mtime_s', 'mtime_n', 'dev', 'ino', 'object_type',

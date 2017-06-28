@@ -8,7 +8,7 @@ from fudge.pack import parse_pack
 from fudge.protocol import upload_pack
 from fudge.refs import write_ref, read_symbolic_ref, write_symbolic_ref
 from fudge.repository import create_repository, get_repository_path
-from fudge.tree import build_tree_from_object, print_tree, write_tree
+from fudge.tree import build_tree_from_object, print_tree, read_tree, write_tree
 from fudge.utils import read_file
 
 
@@ -125,6 +125,10 @@ def cmd_log(oneline):
             print('Author: {} <{}>'.format(commit.author.name, commit.author.email))
             print('Date:   {}\n'.format(commit.author.datetime))
             print('{}\n'.format(commit.message))
+
+
+def cmd_read_tree(tree):
+    read_tree(tree)
 
 
 def cmd_symbolic_ref(ref=None, short=False):

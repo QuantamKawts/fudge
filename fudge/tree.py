@@ -1,6 +1,6 @@
 from collections import OrderedDict
 
-from fudge.index import read_index
+from fudge.index import Index, read_index, write_index
 from fudge.object import Object, load_object, store_object
 from fudge.parsing.builder import Builder
 from fudge.parsing.parser import Parser
@@ -74,6 +74,22 @@ def build_tree_from_object2(root):
 def build_tree_from_object(object_id):
     root = Node('root', None, object_id)
     return build_tree_from_object2(root)
+
+
+def read_tree2(index, root, basepath):
+    for child in root:
+        path = basepath + child.name
+        if child.is_branch:
+            read_tree2(index, child, path + '/')
+        else:
+            index.add_object(child.mode, child.object_id, path)
+
+
+def read_tree(object_id):
+    index = Index()
+    root = build_tree_from_object(object_id)
+    read_tree2(index, root, '')
+    write_index(index)
 
 
 def build_tree_from_index():
