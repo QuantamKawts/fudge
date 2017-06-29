@@ -1,6 +1,7 @@
 import os
-
 from collections import namedtuple
+
+from sortedcontainers import SortedDict
 
 from fudge.object import Object, get_object_path, store_object
 from fudge.parsing.builder import Builder
@@ -11,18 +12,18 @@ from fudge.utils import FudgeException, get_hash, read_file, stat, write_file
 
 class Index(object):
     def __init__(self):
-        self.entries = []
+        self.entries = SortedDict()
 
     def __iter__(self):
-        for entry in self.entries:
+        for entry in self.entries.values():
             yield entry
 
     def __repr__(self):
         return 'Index(entries={!r})'.format(self.entries)
 
     def add(self, entry):
-        self.entries.append(entry)
-        self.entries.sort(key=lambda entry: entry.path)
+        """Add or update an index entry."""
+        self.entries[entry.path] = entry
 
     def add_object(self, mode, object_id, path):
         object_path = get_object_path(object_id)
