@@ -11,10 +11,14 @@ fully-fledged implementation of Git. Here are the planned features:
 - Read and write undeltified version 2 pack files.
 - Talk to Git servers via HTTP(S) using the "smart" protocol.
 
-Support for branches, merge operations, tags… is not currently planned.
+Support for branches, merge operations, revisions (commit-ish, tree-ish), tags…
+is not currently planned.
 
 In short fudge could be used to create and visualize a simple history, push it
 to a remote Git server, and clone repositories.
+
+Fudge does not delete or overwrite any file or directory (e.g. the `rm` command
+only deletes files from the index).
 
 ## Requirements
 
@@ -28,13 +32,12 @@ Set up a development environment:
 ```
 $ virtualenv venv
 $ source venv/bin/activate
-$ pip install -r test-requirements.txt
-$ pip install -e .
+$ make install
 ```
 
 Run tests:
 ```
-$ pytest
+$ make test
 ```
 
 Show help messages:
@@ -72,7 +75,7 @@ $ fudge update-ref HEAD <commit id>
 - `ls-tree`
 - `read-tree`
 - `symbolic-ref` (only supports the `HEAD` symbolic ref)
-- `update-index` (partial)
+- `update-index`
 - `update-ref`
 - `write-tree`
 
@@ -83,6 +86,7 @@ $ fudge update-ref HEAD <commit id>
 - `commit`
 - `init`
 - `log`
+- `rm`
 
 ## References
 

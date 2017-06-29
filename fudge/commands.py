@@ -2,7 +2,7 @@ import os
 import sys
 
 from fudge.commit import build_commit, iter_commits, write_commit
-from fudge.index import add_file_to_index, add_object_to_index, read_index
+from fudge.index import add_file_to_index, add_object_to_index, read_index, remove_from_index
 from fudge.object import Object, load_object, store_object
 from fudge.pack import parse_pack
 from fudge.protocol import upload_pack
@@ -131,6 +131,12 @@ def cmd_read_tree(tree):
     read_tree(tree)
 
 
+def cmd_rm(path):
+    """Remove a file from the index."""
+    cmd_update_index(path, remove=True)
+    print("rm '{}'".format(path))
+
+
 def cmd_symbolic_ref(ref=None, short=False):
     """Read and modify the HEAD symbolic ref."""
     if ref:
@@ -140,11 +146,13 @@ def cmd_symbolic_ref(ref=None, short=False):
         print(ref)
 
 
-def cmd_update_index(path=None, add=False, cacheinfo=None):
+def cmd_update_index(path=None, add=False, remove=False, cacheinfo=None):
     """Register file contents in the working tree to the index."""
     if path:
         if add:
             add_file_to_index(path)
+        elif remove:
+            remove_from_index(path)
     elif cacheinfo:
         info = cacheinfo.split(',')
         if len(info) != 3:
@@ -156,8 +164,11 @@ def cmd_update_index(path=None, add=False, cacheinfo=None):
             print('fudge: invalid object name {}'.format(object_id))
             sys.exit(1)
 
-        if add:
-            add_object_to_index(mode, object_id, path)
+        if not add:
+            print('fudge: missing --add option')
+            sys.exit(1)
+
+        add_object_to_index(mode, object_id, path)
 
 
 def cmd_update_ref(ref, object_id):

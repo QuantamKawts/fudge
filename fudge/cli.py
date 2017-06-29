@@ -3,8 +3,8 @@ import sys
 
 from fudge.commands import (cmd_add, cmd_cat_file, cmd_clone, cmd_commit, cmd_commit_tree,
                             cmd_hash_object, cmd_init, cmd_ls_files, cmd_ls_tree, cmd_log,
-                            cmd_read_tree, cmd_symbolic_ref, cmd_update_index, cmd_update_ref,
-                            cmd_write_tree)
+                            cmd_read_tree, cmd_rm, cmd_symbolic_ref, cmd_update_index,
+                            cmd_update_ref, cmd_write_tree)
 
 
 def cli():
@@ -76,6 +76,10 @@ def cli():
         'read-tree', help='Read tree information into the index')
     read_tree_subparser.add_argument('tree')
 
+    rm_subparser = subparsers.add_parser(
+        'rm', help='Remove a file from the index')
+    rm_subparser.add_argument('path')
+
     symbolic_ref_subparser = subparsers.add_parser(
         'symbolic-ref', help='Read and modify the HEAD symbolic ref')
     symbolic_ref_subparser.add_argument('ref', nargs='?')
@@ -86,6 +90,8 @@ def cli():
         'update-index', help='Register file contents in the working tree to the index')
     update_index_subparser.add_argument(
         '--add', action='store_true', help='Add the specified file to the index')
+    update_index_subparser.add_argument(
+        '--remove', action='store_true', help='Remove the specified file from the index')
     update_index_subparser.add_argument(
         '--cacheinfo',
         metavar='<mode>,<object>,<path>',
@@ -127,10 +133,12 @@ def cli():
         cmd_log(args.oneline)
     elif args.command == 'read-tree':
         cmd_read_tree(args.tree)
+    elif args.command == 'rm':
+        cmd_rm(args.path)
     elif args.command == 'symbolic-ref':
         cmd_symbolic_ref(args.ref, args.short)
     elif args.command == 'update-index':
-        cmd_update_index(args.file, args.add, args.cacheinfo)
+        cmd_update_index(args.file, args.add, args.remove, args.cacheinfo)
     elif args.command == 'update-ref':
         cmd_update_ref(args.ref, args.object)
     elif args.command == 'write-tree':

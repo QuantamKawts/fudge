@@ -14,6 +14,9 @@ class Index(object):
     def __init__(self):
         self.entries = SortedDict()
 
+    def __contains__(self, path):
+        return path in self.entries
+
     def __iter__(self):
         for entry in self.entries.values():
             yield entry
@@ -34,6 +37,10 @@ class Index(object):
         # TODO: handle symbolic links
         entry = IndexEntry(object_id=object_id, object_type=ObjectType.REGULAR_FILE, path=path, **status)
         self.add(entry)
+
+    def remove(self, path):
+        if path in self.entries:
+            del self.entries[path]
 
 
 IndexEntry = namedtuple('IndexEntry', [
@@ -188,6 +195,7 @@ def add_file_to_index(path):
     status['perms'] = '100{:o}'.format(status['perms'])
 
     # TODO: handle symbolic links
+    # TODO: normalize path
     entry = IndexEntry(object_type=ObjectType.REGULAR_FILE, object_id=obj.id, path=path, **status)
     add_to_index(entry)
 
@@ -201,3 +209,12 @@ def add_object_to_index(mode, object_id, path):
     # TODO: handle symbolic links
     entry = IndexEntry(object_type=ObjectType.REGULAR_FILE, object_id=object_id, path=path, **status)
     add_to_index(entry)
+
+
+def remove_from_index(path):
+    index = read_index()
+    if path not in index:
+        raise FudgeException('path {} is not in the index'.format(path))
+
+    index.remove(path)
+    write_index(index)
