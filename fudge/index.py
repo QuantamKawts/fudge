@@ -35,6 +35,7 @@ class Index(object):
         status['perms'] = mode
 
         # TODO: handle symbolic links
+        # TODO: normalize path
         entry = IndexEntry(object_id=object_id, object_type=ObjectType.REGULAR_FILE, path=path, **status)
         self.add(entry)
 
@@ -180,12 +181,6 @@ def write_index(index):
     write_file(path, data)
 
 
-def add_to_index(entry):
-    index = read_index()
-    index.add(entry)
-    write_index(index)
-
-
 def add_file_to_index(path):
     data = read_file(path)
     obj = Object('blob', len(data), data)
@@ -197,18 +192,16 @@ def add_file_to_index(path):
     # TODO: handle symbolic links
     # TODO: normalize path
     entry = IndexEntry(object_type=ObjectType.REGULAR_FILE, object_id=obj.id, path=path, **status)
-    add_to_index(entry)
+
+    index = read_index()
+    index.add(entry)
+    write_index(index)
 
 
 def add_object_to_index(mode, object_id, path):
-    object_path = get_object_path(object_id)
-    status = stat(object_path)
-    # TODO: check the validity of mode
-    status['perms'] = mode
-
-    # TODO: handle symbolic links
-    entry = IndexEntry(object_type=ObjectType.REGULAR_FILE, object_id=object_id, path=path, **status)
-    add_to_index(entry)
+    index = read_index()
+    index.add_object(mode, object_id, path)
+    write_index(index)
 
 
 def remove_from_index(path):
