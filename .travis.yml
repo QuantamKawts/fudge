@@ -3,7 +3,5 @@ python:
   - "3.4"
   - "3.5"
   - "3.6"
-install:
-  - pip install -r test-requirements.txt
-  - pip install -e .
-script: pytest
+install: make install
+script: make test
