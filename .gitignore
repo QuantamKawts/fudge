@@ -1,5 +1,6 @@
 # Fudge
 .fudge/
+repo/
 
 # Python
 *.egg-info/
