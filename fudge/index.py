@@ -3,11 +3,11 @@ from collections import namedtuple
 
 from sortedcontainers import SortedDict
 
-from fudge.object import Object, get_object_path, store_object
+from fudge.object import Object, get_object_path, load_object, store_object
 from fudge.parsing.builder import Builder
 from fudge.parsing.parser import Parser
-from fudge.repository import get_repository_path
-from fudge.utils import FudgeException, get_hash, read_file, stat, write_file
+from fudge.repository import get_repository_path, get_working_tree_path
+from fudge.utils import FudgeException, get_hash, makedirs, read_file, stat, write_file
 
 
 class Index(object):
@@ -38,6 +38,9 @@ class Index(object):
         # TODO: normalize path
         entry = IndexEntry(object_id=object_id, object_type=ObjectType.REGULAR_FILE, path=path, **status)
         self.add(entry)
+
+    def get(self, path):
+        return self.entries.get(path)
 
     def remove(self, path):
         if path in self.entries:
@@ -211,3 +214,17 @@ def remove_from_index(path):
 
     index.remove(path)
     write_index(index)
+
+
+def checkout_index():
+    basedir = get_working_tree_path()
+
+    index = read_index()
+    for entry in index:
+        path = os.path.join(basedir, entry.path)
+        dirname = os.path.dirname(path)
+        makedirs(dirname)
+
+        if not os.path.exists(path):
+            obj = load_object(entry.object_id)
+            write_file(path, obj.contents)

@@ -3,12 +3,17 @@ import os
 from fudge.utils import makedirs, write_file
 
 
-def get_repository_path():
-    basedir = os.environ.get('FUDGE_DIR')
-    if basedir:
-        basedir = os.path.abspath(basedir)
+def get_working_tree_path():
+    env = os.environ.get('FUDGE_DIR')
+    if env:
+        basedir = os.path.abspath(env)
     else:
         basedir = os.getcwd()
+    return basedir
+
+
+def get_repository_path():
+    basedir = get_working_tree_path()
     return os.path.join(basedir, '.fudge')
 
 

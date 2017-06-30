@@ -2,7 +2,8 @@ import os
 import sys
 
 from fudge.commit import build_commit, iter_commits, write_commit
-from fudge.index import add_file_to_index, add_object_to_index, read_index, remove_from_index
+from fudge.index import (add_file_to_index, add_object_to_index, checkout_index, read_index,
+                         remove_from_index)
 from fudge.object import Object, load_object, store_object
 from fudge.pack import parse_pack
 from fudge.protocol import upload_pack
@@ -30,6 +31,10 @@ def cmd_cat_file(object_id, show_type=False, show_size=False, show_contents=Fals
         else:
             contents = str(obj.contents, 'utf-8')
             print(contents, end='')
+
+
+def cmd_checkout_index():
+    checkout_index()
 
 
 def cmd_clone(repository):

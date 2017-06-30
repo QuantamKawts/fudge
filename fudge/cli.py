@@ -1,9 +1,9 @@
 import argparse
 import sys
 
-from fudge.commands import (cmd_add, cmd_cat_file, cmd_clone, cmd_commit, cmd_commit_tree,
-                            cmd_hash_object, cmd_init, cmd_ls_files, cmd_ls_tree, cmd_log,
-                            cmd_read_tree, cmd_rm, cmd_symbolic_ref, cmd_update_index,
+from fudge.commands import (cmd_add, cmd_cat_file, cmd_checkout_index, cmd_clone, cmd_commit,
+                            cmd_commit_tree, cmd_hash_object, cmd_init, cmd_ls_files, cmd_ls_tree,
+                            cmd_log, cmd_read_tree, cmd_rm, cmd_symbolic_ref, cmd_update_index,
                             cmd_update_ref, cmd_write_tree)
 
 
@@ -27,6 +27,8 @@ def cli():
     clone_subparser = subparsers.add_parser(
         'clone', help='Clone a repository into a new directory')
     clone_subparser.add_argument('repository')
+
+    subparsers.add_parser('checkout-index', help='Copy files from the index to the working tree')
 
     commit_subparser = subparsers.add_parser(
         'commit', help='Record changes to the repository')
@@ -115,6 +117,8 @@ def cli():
         cmd_add(args.path)
     elif args.command == 'cat-file':
         cmd_cat_file(args.object, args.t, args.s, args.p)
+    elif args.command == 'checkout-index':
+        cmd_checkout_index()
     elif args.command == 'clone':
         cmd_clone(args.repository)
     elif args.command == 'commit':

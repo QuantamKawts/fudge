@@ -7,7 +7,7 @@ fully-fledged implementation of Git. Here are the planned features:
 - Store and load objects to and from the object store (`.fudge/objects/`).
 - Read and write blob, tree and commit objects.
 - Read and write version 2 Git index files, with no extensions.
-- Read and write symbolic refs and refs.
+- Read and write refs and symbolic refs.
 - Read and write undeltified version 2 pack files.
 - Talk to Git servers via HTTP(S) using the "smart" protocol.
 
@@ -69,6 +69,7 @@ $ fudge update-ref HEAD <commit id>
 ### Plumbing
 
 - `cat-file`
+- `checkout-index`
 - `commit-tree`
 - `hash-object`
 - `ls-files`
