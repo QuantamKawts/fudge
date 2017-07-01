@@ -1,6 +1,6 @@
-from collections import namedtuple
-from datetime import datetime
+import datetime
 import time
+from collections import namedtuple
 
 from fudge.config import get_config_value
 from fudge.object import Object, load_object, store_object
@@ -22,8 +22,13 @@ class Author(object):
     @property
     def datetime(self):
         timestamp = float(self.timestamp)
-        utc_datetime = datetime.utcfromtimestamp(timestamp)
-        return '{} {}'.format(utc_datetime.strftime('%c'), self.offset)
+
+        hours, minutes = int(self.offset[0:3]), int(self.offset[3:5])
+        timedelta = datetime.timedelta(hours=hours, minutes=minutes)
+        timezone = datetime.timezone(timedelta)
+
+        dt = datetime.datetime.fromtimestamp(timestamp, timezone)
+        return '{} {}'.format(dt.strftime('%c'), self.offset)
 
 
 def build_commit(tree, parents, message):
