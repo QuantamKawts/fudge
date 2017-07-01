@@ -29,7 +29,13 @@ class Index(object):
         self.entries[entry.path] = entry
 
     def add_object(self, mode, object_id, path):
+        # TODO: move elsewhere
+        if mode == '160000':
+            print('Skipping submodule {:.7} at {}'.format(object_id, path))
+            return
+
         object_path = get_object_path(object_id)
+
         status = stat(object_path)
         # TODO: check the validity of mode
         status['perms'] = mode

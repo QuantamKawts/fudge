@@ -1,7 +1,20 @@
+import string
+
 import requests
 
 from fudge import __version__
 from fudge.utils import FudgeException
+
+
+def get_repository_name(repo_url):
+    repo_url = repo_url.rstrip('/')
+    repo_name = repo_url.split('/')[-1].rstrip('.git')
+
+    whitelist = set([char for char in string.ascii_letters + string.digits + '-_'])
+    if not all(char in whitelist for char in repo_name):
+        raise FudgeException('invalid repository name')
+
+    return repo_name
 
 
 def discover_refs(repo_url, service):
@@ -40,14 +53,14 @@ def discover_refs(repo_url, service):
         object_id, ref = ref_line.split()
         refs[ref] = object_id
 
-    return head_object_id, capabilities, refs
+    return head_object_id
 
 
 def upload_pack(repo_url):
     repo_url = repo_url.rstrip('/')
     service = 'git-upload-pack'
 
-    head_object_id, _, _ = discover_refs(repo_url, service)
+    head_object_id = discover_refs(repo_url, service)
 
     command = 'want {}'.format(head_object_id)
     request = pkt_line(command)
@@ -72,7 +85,9 @@ def upload_pack(repo_url):
     if status != b'NAK':
         raise FudgeException('could not retrieve the requested pack file')
 
-    return next(lines)
+    pack = next(lines)
+
+    return pack, head_object_id
 
 
 def pkt_line(command=None):

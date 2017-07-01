@@ -1,16 +1,16 @@
 import os
 import sys
 
-from fudge.commit import build_commit, iter_commits, write_commit
+from fudge.commit import build_commit, iter_commits, parse_commit, write_commit
 from fudge.index import (add_file_to_index, add_object_to_index, checkout_index, read_index,
                          remove_from_index)
 from fudge.object import Object, load_object, store_object
 from fudge.pack import parse_pack
-from fudge.protocol import upload_pack
+from fudge.protocol import get_repository_name, upload_pack
 from fudge.refs import write_ref, read_symbolic_ref, write_symbolic_ref
 from fudge.repository import create_repository, get_repository_path
 from fudge.tree import build_tree_from_object, print_tree, read_tree, write_tree
-from fudge.utils import read_file
+from fudge.utils import makedirs, read_file
 
 
 def cmd_add(path=None):
@@ -37,9 +37,21 @@ def cmd_checkout_index():
     checkout_index()
 
 
-def cmd_clone(repository):
+def cmd_clone(repo_url):
+    repo_name = get_repository_name(repo_url)
+
+    if os.path.exists(repo_name):
+        print("destination path '{}' already exists".format(repo_name))
+        sys.exit(1)
+
+    print("Cloning into '{}'".format(repo_name))
+    # FIXME: temporary hack
+    makedirs(repo_name)
+    os.chdir(repo_name)
+    create_repository()
+
     print('Discovering refs and downloading a pack file')
-    pack = upload_pack(repository)
+    pack, head_object_id = upload_pack(repo_url)
 
     print('Parsing the pack file')
     objects = parse_pack(pack)
@@ -48,6 +60,15 @@ def cmd_clone(repository):
         print('\rWriting objects to disk ({}/{})'.format(i+1, len(objects)), end='')
         store_object(obj)
     print()
+
+    print('Setting HEAD to {:.7}'.format(head_object_id))
+    write_ref('HEAD', head_object_id)
+
+    print('Checking out {:.7}'.format(head_object_id))
+    obj = load_object(head_object_id)
+    commit = parse_commit(obj)
+    read_tree(commit.tree)
+    checkout_index()
 
 
 def cmd_commit(message=None):
