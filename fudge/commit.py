@@ -70,6 +70,28 @@ def write_commit(message):
     return commit.id
 
 
+def parse_user_and_datetime(parts, expected_keyword):
+    if len(parts) < 5:
+        raise FudgeException('invalid commit')
+
+    keyword, name, email, timestamp, offset = (
+        parts[0], ' '.join(parts[1:-3]), parts[-3], parts[-2], parts[-1])
+
+    if keyword != expected_keyword:
+        raise FudgeException('invalid commit')
+
+    email = email.lstrip('<').rstrip('>')
+    return Author(name, email, timestamp, offset)
+
+
+def parse_author(parts):
+    return parse_user_and_datetime(parts, 'author')
+
+
+def parse_committer(parts):
+    return parse_user_and_datetime(parts, 'committer')
+
+
 def parse_commit(obj):
     if obj.type != 'commit':
         raise FudgeException('the specified object is not a commit')
@@ -90,15 +112,8 @@ def parse_commit(obj):
 
         parents.append(parent_id)
 
-    # FIXME: Git author names can contain spaces
-    author_keyword, name, email, timestamp, offset = line
-    email = email.lstrip('<').rstrip('>')
-    author = Author(name, email, timestamp, offset)
-
-    # FIXME: Git committer names can contain spaces
-    committer_keyword, name, email, timestamp, offset = next(lines).split()
-    email = email.lstrip('<').rstrip('>')
-    committer = Author(name, email, timestamp, offset)
+    author = parse_author(line)
+    committer = parse_committer(next(lines).split())
 
     return Commit(obj.id, tree_id, parents, author, committer, message)
 
