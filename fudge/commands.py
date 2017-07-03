@@ -8,9 +8,9 @@ from fudge.object import Object, load_object, store_object
 from fudge.pack import parse_pack
 from fudge.protocol import get_repository_name, upload_pack
 from fudge.refs import write_ref, read_symbolic_ref, write_symbolic_ref
-from fudge.repository import create_repository, get_repository_path
+from fudge.repository import create_repository
 from fudge.tree import build_tree_from_object, print_tree, read_tree, write_tree
-from fudge.utils import makedirs, read_file
+from fudge.utils import read_file
 
 
 def cmd_add(path=None):
@@ -37,18 +37,17 @@ def cmd_checkout_index():
     checkout_index()
 
 
-def cmd_clone(repo_url):
-    repo_name = get_repository_name(repo_url)
+def cmd_clone(repo_url, repo_name=None):
+    if not repo_name:
+        repo_name = get_repository_name(repo_url)
 
     if os.path.exists(repo_name):
         print("destination path '{}' already exists".format(repo_name))
         sys.exit(1)
 
     print("Cloning into '{}'".format(repo_name))
-    # FIXME: temporary hack
-    makedirs(repo_name)
+    create_repository(repo_name)
     os.chdir(repo_name)
-    create_repository()
 
     print('Discovering refs and downloading a pack file')
     pack, head_object_id = upload_pack(repo_url)
@@ -112,17 +111,14 @@ def cmd_hash_object(path=None, stdin=False, write=False):
         store_object(obj)
 
 
-def cmd_init():
+def cmd_init(path=None):
     """Create an empty Git repository or reinitialize an existing one."""
-    basedir = get_repository_path()
-    reinit = os.path.exists(basedir)
-
-    create_repository()
+    fullpath, reinit = create_repository(path)
 
     if reinit:
-        print('Reinitialized existing Git repository in {}'.format(basedir))
+        print('Reinitialized existing Git repository in {}'.format(fullpath))
     else:
-        print('Initialized empty Git repository in {}'.format(basedir))
+        print('Initialized empty Git repository in {}'.format(fullpath))
 
 
 def cmd_ls_files(stage=False):

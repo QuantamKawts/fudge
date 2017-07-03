@@ -3,8 +3,7 @@ import shutil
 
 import pytest
 
-from fudge.commands import cmd_init
-from fudge.repository import get_repository_path
+from fudge.repository import create_repository, get_repository_path
 from fudge.utils import makedirs
 
 
@@ -25,8 +24,8 @@ def get_destination_path(path):
 
 @pytest.fixture
 def repo(request, tmpdir):
-    os.environ['FUDGE_DIR'] = str(tmpdir)
-    cmd_init()
+    os.chdir(str(tmpdir))
+    create_repository()
 
     mark = request.keywords.get('fudgefiles')
     if mark:

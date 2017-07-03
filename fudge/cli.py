@@ -27,6 +27,7 @@ def cli():
     clone_subparser = subparsers.add_parser(
         'clone', help='Clone a repository into a new directory')
     clone_subparser.add_argument('repository')
+    clone_subparser.add_argument('path', nargs='?')
 
     subparsers.add_parser('checkout-index', help='Copy files from the index to the working tree')
 
@@ -54,8 +55,9 @@ def cli():
     )
     hash_object_subparser.add_argument('file', nargs='?')
 
-    subparsers.add_parser(
+    init_subparser = subparsers.add_parser(
         'init', help='Create an empty Git repository or reinitialize an existing one')
+    init_subparser.add_argument('path', nargs='?')
 
     ls_files_subparser = subparsers.add_parser(
         'ls-files', help='Show information about files in the index')
@@ -120,7 +122,7 @@ def cli():
     elif args.command == 'checkout-index':
         cmd_checkout_index()
     elif args.command == 'clone':
-        cmd_clone(args.repository)
+        cmd_clone(args.repository, args.path)
     elif args.command == 'commit':
         cmd_commit(args.m)
     elif args.command == 'commit-tree':
@@ -128,7 +130,7 @@ def cli():
     elif args.command == 'hash-object':
         cmd_hash_object(args.file, args.stdin, args.w)
     elif args.command == 'init':
-        cmd_init()
+        cmd_init(args.path)
     elif args.command == 'ls-files':
         cmd_ls_files(args.stage)
     elif args.command == 'ls-tree':
