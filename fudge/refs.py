@@ -16,8 +16,8 @@ def get_ref_path(ref):
 
 
 def valid_ref(ref):
-    blacklist = [chr(value) for value in range(20)]
-    blacklist.extend([' ', '*', ':', '?', '[', '^', '~', '/.', '..'])
+    blacklist = set([chr(value) for value in range(20)])
+    blacklist.update([' ', '*', ':', '?', '[', '^', '~', '/.', '..'])
     return ref.startswith('refs/') and not ref.endswith('/') \
         and not any(char in ref for char in blacklist)
 

@@ -60,8 +60,8 @@ def ishex(string):
 
 
 def issafe(string):
-    blacklist = ['\0', '\n', '<', '>']
-    edge_blacklist = [' ', '.', ',', ':', ';', '"', "'"]
+    blacklist = set(['\0', '\n', '<', '>'])
+    edge_blacklist = set([' ', '.', ',', ':', ';', '"', "'"])
     return not any(char in blacklist for char in string) \
         and not any(string.startswith(char) for char in edge_blacklist) \
         and not any(string.endswith(char) for char in edge_blacklist)
