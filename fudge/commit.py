@@ -123,12 +123,16 @@ def parse_commit(obj):
     return Commit(obj.id, tree_id, parents, author, committer, message)
 
 
+def read_commit(object_id):
+    obj = load_object(object_id)
+    return parse_commit(obj)
+
+
 def iter_commits():
     object_id = read_ref('HEAD')
 
     while True:
-        obj = load_object(object_id)
-        commit = parse_commit(obj)
+        commit = read_commit(object_id)
 
         yield commit
 

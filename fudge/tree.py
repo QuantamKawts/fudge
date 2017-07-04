@@ -34,16 +34,34 @@ class Node(object):
         return len(self.children) == 0
 
 
-def iter_tree(root, recurse):
+def get_node(root, path):
+    path = path.split('/')
+
+    current = root
+    for dirname in path:
+        current = current.get(dirname)
+        if not current:
+            break
+
+    return current
+
+
+def walk_tree2(root, recurse, basepath):
     for child in root:
-        yield child
+        path = basepath + child.name
+
+        yield path, child
 
         if child.is_branch and recurse:
-            yield from iter_tree(child, recurse)
+            yield from walk_tree2(child, recurse, path + '/')
+
+
+def walk_tree(root, recurse):
+    return walk_tree2(root, recurse, '')
 
 
 def print_tree(root, recurse):
-    for node in iter_tree(root, recurse):
+    for _, node in walk_tree(root, recurse):
         if node.is_branch and recurse:
             continue
 

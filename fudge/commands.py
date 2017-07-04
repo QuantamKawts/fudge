@@ -1,7 +1,7 @@
 import os
 import sys
 
-from fudge.commit import build_commit, iter_commits, parse_commit, write_commit
+from fudge.commit import build_commit, iter_commits, read_commit, write_commit
 from fudge.index import (add_file_to_index, add_object_to_index, checkout_index, read_index,
                          remove_from_index)
 from fudge.object import Object, load_object, store_object
@@ -11,6 +11,7 @@ from fudge.refs import write_ref, read_symbolic_ref, write_symbolic_ref
 from fudge.repository import create_repository
 from fudge.tree import build_tree_from_object, print_tree, read_tree, write_tree
 from fudge.utils import read_file
+from fudge.working import status
 
 
 def cmd_add(path=None):
@@ -64,8 +65,7 @@ def cmd_clone(repo_url, repo_name=None):
     write_ref('HEAD', head_object_id)
 
     print('Checking out {:.7}'.format(head_object_id))
-    obj = load_object(head_object_id)
-    commit = parse_commit(obj)
+    commit = read_commit(head_object_id)
     read_tree(commit.tree)
     checkout_index()
 
@@ -157,6 +157,35 @@ def cmd_rm(path):
     """Remove a file from the index."""
     cmd_update_index(path, remove=True)
     print("rm '{}'".format(path))
+
+
+def cmd_status():
+    current_branch = read_symbolic_ref(short=True)
+    staged, changed, untracked = status()
+
+    print('On branch {}'.format(current_branch))
+
+    if staged:
+        print('Changes to be committed:\n')
+        for state, path in staged:
+            state += ':'
+            print('\t{:11} {}'.format(state, path))
+        print()
+
+    if changed:
+        print('Changes not staged for commit:')
+        print('  (use "fudge add/rm <file>" to update what will be committed)\n')
+        for state, path in changed:
+            state += ':'
+            print('\t{:11} {}'.format(state, path))
+        print()
+
+    if untracked:
+        print('Untracked files:')
+        print('  (use "fudge add <file>" to include in what will be committed)\n')
+        for path in untracked:
+            print('\t{}'.format(path))
+        print()
 
 
 def cmd_symbolic_ref(ref=None, short=False):

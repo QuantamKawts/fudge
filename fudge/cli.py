@@ -3,8 +3,8 @@ import sys
 
 from fudge.commands import (cmd_add, cmd_cat_file, cmd_checkout_index, cmd_clone, cmd_commit,
                             cmd_commit_tree, cmd_hash_object, cmd_init, cmd_ls_files, cmd_ls_tree,
-                            cmd_log, cmd_read_tree, cmd_rm, cmd_symbolic_ref, cmd_update_index,
-                            cmd_update_ref, cmd_write_tree)
+                            cmd_log, cmd_read_tree, cmd_rm, cmd_status, cmd_symbolic_ref,
+                            cmd_update_index, cmd_update_ref, cmd_write_tree)
 
 
 def cli():
@@ -84,6 +84,9 @@ def cli():
         'rm', help='Remove a file from the index')
     rm_subparser.add_argument('path')
 
+    subparsers.add_parser(
+        'status', help='Show the working tree status')
+
     symbolic_ref_subparser = subparsers.add_parser(
         'symbolic-ref', help='Read and modify the HEAD symbolic ref')
     symbolic_ref_subparser.add_argument('ref', nargs='?')
@@ -141,6 +144,8 @@ def cli():
         cmd_read_tree(args.tree)
     elif args.command == 'rm':
         cmd_rm(args.path)
+    elif args.command == 'status':
+        cmd_status()
     elif args.command == 'symbolic-ref':
         cmd_symbolic_ref(args.ref, args.short)
     elif args.command == 'update-index':
