@@ -17,7 +17,7 @@ def test_value():
 
 
 def test_repeated_values(tmpdir):
-    path = os.path.join(tmpdir, '.gitconfig')
+    path = os.path.join(str(tmpdir), '.gitconfig')
     shutil.copy(get_data_path('.gitconfig'), path)
 
     with open(path, 'a') as f:
