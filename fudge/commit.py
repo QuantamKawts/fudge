@@ -66,8 +66,9 @@ def build_commit(tree, parents, message):
 def write_commit(message):
     tree_id = write_tree()
     parent = read_ref('HEAD')
+    parents = [parent] if parent else []
 
-    commit = build_commit(tree_id, [parent], message)
+    commit = build_commit(tree_id, parents, message)
     store_object(commit)
 
     write_ref('HEAD', commit.id)

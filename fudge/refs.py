@@ -63,7 +63,7 @@ def read_ref(ref):
 
     path = get_ref_path(ref)
     if not os.path.exists(path):
-        raise FudgeException('the ref file does not exist')
+        return None
 
     return read_file(path, mode='r').rstrip()
 

@@ -81,11 +81,14 @@ def compute_staged():
     index = read_index()
 
     commit_id = read_ref('HEAD')
-    commit = read_commit(commit_id)
-    tree = build_tree_from_object(commit.tree)
+    if commit_id:
+        commit = read_commit(commit_id)
+        tree = build_tree_from_object(commit.tree)
+        head_paths = set([path for path, node in walk_tree(tree, recurse=True) if node.is_leaf])
+    else:
+        head_paths = set()
 
     index_paths = set([entry.path for entry in index])
-    head_paths = set([path for path, node in walk_tree(tree, recurse=True) if node.is_leaf])
 
     new_files = index_paths - head_paths
     staged.extend([('new file', path) for path in new_files])
