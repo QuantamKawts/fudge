@@ -11,7 +11,7 @@ from fudge.refs import write_ref, read_symbolic_ref, write_symbolic_ref
 from fudge.repository import create_repository
 from fudge.tree import build_tree_from_object, print_tree, read_tree, write_tree
 from fudge.utils import read_file
-from fudge.working import status
+from fudge.working import compute_staged, status
 
 
 def cmd_add(path=None):
@@ -71,6 +71,11 @@ def cmd_clone(repo_url, repo_name=None):
 
 
 def cmd_commit(message=None):
+    staged = compute_staged()
+    if not staged:
+        print('fudge: nothing to commit')
+        sys.exit(1)
+
     if not message:
         print('fudge: empty commit message')
         sys.exit(1)
@@ -83,9 +88,7 @@ def cmd_commit(message=None):
 
 
 def cmd_commit_tree(tree, parent=None, message=None):
-    parents = []
-    if parent:
-        parents = [parent]
+    parents = [parent] if parent else []
 
     if not message:
         message = sys.stdin.read()
