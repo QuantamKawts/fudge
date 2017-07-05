@@ -31,7 +31,7 @@ def discover_refs(repo_url, service):
 
     content_type = response.headers.get('Content-Type')
     if content_type != 'application/x-{}-advertisement'.format(service):
-        raise FudgeException('invalid response Content-Type: {}'.format(content_type))
+        raise FudgeException('invalid Content-Type: {}'.format(content_type))
 
     lines = iter(response.text.split('\n'))
 
