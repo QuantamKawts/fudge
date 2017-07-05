@@ -11,18 +11,10 @@ def get_config_path():
 
 
 def get_config_value(section, option, *, path=None):
-    """Get a value from the global Git configuration file.
-
-    Examples:
-        >>> get_config_value('user', 'name')
-        'alice'
-
-        >>> get_config_value('user', 'nonexistent_option')
-        None
-    """
+    """Get a value from the global Git configuration file."""
     path = path or get_config_path()
     if not os.path.exists(path):
-        raise FudgeException('the global Git configuration file {} does not exist'.format(path))
+        raise FudgeException('the Git configuration file {} does not exist'.format(path))
 
     config = configparser.ConfigParser(strict=False)
     config.read(path)
