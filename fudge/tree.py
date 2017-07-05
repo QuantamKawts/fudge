@@ -61,12 +61,19 @@ def walk_tree(root, recurse):
 
 
 def print_tree(root, recurse):
-    for _, node in walk_tree(root, recurse):
+    types = {
+        '100644': 'blob',
+        '100755': 'blob',
+        '40000': 'tree',
+        '160000': 'commit',
+    }
+
+    for path, node in walk_tree(root, recurse):
         if node.is_branch and recurse:
             continue
 
-        type_ = 'tree' if node.is_branch else 'blob'
-        print('{:0>6} {} {} {}'.format(node.mode, type_, node.object_id, node.name))
+        node_type = types.get(node.mode) or 'unknown'
+        print('{:0>6} {} {} {}'.format(node.mode, node_type, node.object_id, path))
 
 
 def build_tree_from_object2(root):
