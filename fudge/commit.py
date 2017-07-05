@@ -5,7 +5,7 @@ from collections import namedtuple
 from fudge.config import get_config_value
 from fudge.object import Object, load_object, store_object
 from fudge.tree import write_tree
-from fudge.refs import read_ref, write_ref
+from fudge.refs import read_ref, read_symbolic_ref, write_ref
 from fudge.utils import FudgeException
 
 
@@ -131,6 +131,10 @@ def read_commit(object_id):
 
 def iter_commits():
     object_id = read_ref('HEAD')
+    if not object_id:
+        current_branch = read_symbolic_ref(short=True)
+        raise FudgeException(
+            "the current branch '{}' does not have any commits yet".format(current_branch))
 
     while True:
         commit = read_commit(object_id)
