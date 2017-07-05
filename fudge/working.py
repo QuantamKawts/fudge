@@ -125,6 +125,8 @@ def compute_changed_and_untracked():
     changed = []
     untracked = []
 
+    basedir = get_working_tree_path()
+
     index = read_index()
 
     index_paths = set([entry.path for entry in index])
@@ -137,7 +139,8 @@ def compute_changed_and_untracked():
     for path in similar:
         entry = index.get(path)
 
-        contents = read_file(path)
+        abspath = os.path.join(basedir, path)
+        contents = read_file(abspath)
         obj = Object('blob', len(contents), contents)
 
         if entry.object_id != obj.id:
