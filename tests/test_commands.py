@@ -36,7 +36,7 @@ def test_cat_file(capsys, repo):
     assert out == 'test content\n'
 
 
-@pytest.mark.fudgefiles(['index_valid', 'index'])
+@pytest.mark.fudgefiles(['index/valid', 'index'])
 def test_ls_files(capsys, repo):
     expected = [
         '.gitignore',
