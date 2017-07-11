@@ -38,12 +38,12 @@ def stat(path):
         'ctime_n': ctime_n,
         'mtime_s': mtime_s,
         'mtime_n': mtime_n,
-        'dev': status.st_dev & 0xFFFFFFFF,
-        'ino': status.st_ino & 0xFFFFFFFF,
+        'dev': status.st_dev & 0xffffffff,
+        'ino': status.st_ino & 0xffffffff,
         'perms': status.st_mode,
-        'uid': status.st_uid,
-        'gid': status.st_gid,
-        'size': status.st_size,
+        'uid': status.st_uid & 0xffffffff,
+        'gid': status.st_gid & 0xffffffff,
+        'size': status.st_size & 0xffffffff,
     }
 
 

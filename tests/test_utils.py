@@ -1,5 +1,7 @@
 import os
+
 from fudge.utils import stat
+
 from tests.conftest import get_data_path
 
 
